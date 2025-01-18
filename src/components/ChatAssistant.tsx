@@ -6,7 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { supabase } from "@/integrations/supabase/client";
 
-export const ChatAssistant = () => {
+export const ChatAssistant = ({ onScoreUpdate }: { onScoreUpdate: (score: number) => void }) => {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -44,7 +44,8 @@ Overall "rizz" assessment.
 Highlight strengths.
 Identify areas to improve.
 Suggest concrete changes.
-Provide "Rizz Score" (1-10).
+Provide "Rizz Score" (0-100).
+Format score as: "SCORE: [number]"
 No user conversation.
 No general dating advice.
 No message generation.
@@ -59,6 +60,15 @@ Be consistent and helpful.
       const result = await model.generateContent(prompt);
       const response = await result.response;
       const text = response.text();
+
+      // Extract score from the response
+      const scoreMatch = text.match(/SCORE:\s*(\d+)/);
+      if (scoreMatch && scoreMatch[1]) {
+        const score = parseInt(scoreMatch[1], 10);
+        if (score >= 0 && score <= 100) {
+          onScoreUpdate(score);
+        }
+      }
 
       toast({
         title: "AI Feedback",

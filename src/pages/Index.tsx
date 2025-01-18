@@ -1,8 +1,11 @@
+import { useState } from "react";
 import { Header } from "@/components/Header";
 import { RizzScore } from "@/components/RizzScore";
 import { ChatAssistant } from "@/components/ChatAssistant";
 
 const Index = () => {
+  const [rizzScore, setRizzScore] = useState(75); // Default score
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -16,8 +19,8 @@ const Index = () => {
           </p>
         </div>
         <div className="grid gap-8 md:grid-cols-[1fr_2fr]">
-          <RizzScore />
-          <ChatAssistant />
+          <RizzScore score={rizzScore} />
+          <ChatAssistant onScoreUpdate={setRizzScore} />
         </div>
       </main>
     </div>

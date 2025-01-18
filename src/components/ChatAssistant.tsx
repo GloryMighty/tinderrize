@@ -26,6 +26,9 @@ export const ChatAssistant = () => {
 
       const prompt = `You are an AI assistant named "RizzMaster" within the Tinderizzer application, designed to help users improve their online dating communication. 
 Your primary function is to analyze user messages and provide feedback to enhance their "rizz" (charisma, charm, and effectiveness in attracting a romantic partner).
+The message of user is "${message}". 
+
+FOLLOW THE INSTRUCTIONS BELOW! 
 
 **Your Core Principles:**
 

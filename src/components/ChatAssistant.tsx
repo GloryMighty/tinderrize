@@ -35,15 +35,12 @@ export const ChatAssistant = ({ onScoreUpdate }: { onScoreUpdate: (score: number
         model: "gemini-2.0-flash-exp",
         tools: [
           {
-            googleSearchRetrieval: {
-              dynamicRetrievalConfig: {
-                mode: DynamicRetrievalMode.MODE_DYNAMIC,
-                dynamicThreshold: 0.9,
-              },
+            googleSearch: {  // Changed from googleSearchRetrieval
+              enable_search: true,
             },
           },
         ],
-      }, { apiVersion: "v1beta" });
+      });
 
       const chatSession = model.startChat({
         generationConfig,

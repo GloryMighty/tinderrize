@@ -33,14 +33,14 @@ export const ChatAssistant = ({ onScoreUpdate }: { onScoreUpdate: (score: number
       const genAI = new GoogleGenerativeAI(secrets.value);
       const model = genAI.getGenerativeModel({
         model: "gemini-2.0-flash-exp",
-        tools: [
-          {
-            googleSearch: {  // Changed from googleSearchRetrieval
-              enable_search: true,
-            },
-          },
-        ],
-      });
+        tools: [{
+          googleSearch: {
+            capabilities: {
+              search: true,
+            }
+          }
+        }]
+      }, { apiVersion: "v1beta" });
 
       const chatSession = model.startChat({
         generationConfig,

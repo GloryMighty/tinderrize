@@ -37,7 +37,7 @@ Identify areas to improve and suggest concrete changes that will help user to im
 It's crucial that your answer should contain only 10 strings of text analysis, no longer than 8 words per string. 
 In the end of your analysis provide Rizz Score (0-100). Format score as: SCORE: [number]. 
 
-Don't use ", [, {, and so on.
+In your response don't use ", [, {, and so on. But your Rizz Score should be on the scale to 100. 
 It's extremely important that in your answer you don't use any additional symbols, besides commas and periods.
 `;
 

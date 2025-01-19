@@ -6,6 +6,15 @@ import { useToast } from "@/hooks/use-toast";
 import { GoogleGenerativeAI, DynamicRetrievalMode } from "@google/generative-ai";
 import { supabase } from "@/integrations/supabase/client";
 
+// Config for ChatAssistant component
+const generationConfig = {
+  temperature: 0,
+  topP: 0.95,
+  topK: 40,
+  maxOutputTokens: 800,
+  responseMimeType: "text/plain",
+};
+
 export const ChatAssistant = ({ onScoreUpdate }: { onScoreUpdate: (score: number) => void }) => {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -22,26 +31,47 @@ export const ChatAssistant = ({ onScoreUpdate }: { onScoreUpdate: (score: number
       });
       
       const genAI = new GoogleGenerativeAI(secrets.value);
-      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+      const model = genAI.getGenerativeModel({
+        model: "gemini-2.0-flash-exp",
+        tools: [
+          {
+            googleSearchRetrieval: {
+              dynamicRetrievalConfig: {
+                mode: DynamicRetrievalMode.MODE_DYNAMIC,
+                dynamicThreshold: 0.9,
+              },
+            },
+          },
+        ],
+      }, { apiVersion: "v1beta" });
+
+      const chatSession = model.startChat({
+        generationConfig,
+        history: [
+          {
+            role: "user",
+            parts: [{ text: message }],
+          }
+        ],
+      });
 
       const prompt = `You are RizzMaster, world-class guru of Dating, a Tinderizzer AI.
-Analyze user message: "${message}". Improve user's message for dating purposes. Answer in 10 strings max.
-Personalize his message. Check for humor/wit and evaluate confidence of the message. 
+Analyze user message in ${message}. 
+Improve user's message for dating purposes. Answer in 10 strings max.
+Personalize his message, assess engagement on the scale from 1 to 10. Check for humor/wit and evaluate confidence of the message. 
 Look for originality and ensure relevance.
 Consider message context, check grammar and spelling, be careful though, as it might fit the context.
 Provide the overall "rizz's" assessment. 
 Highlight strengths of the rizz.
 
-Identify areas to improve and suggest concrete changes.
-It's crucial that your answer should contain only 10 strings of text analysis, no longer than 8 words per string. 
-In the end of your analysis provide Rizz Score (0-100). Format score as: SCORE: [number]. 
+Identify areas to improve and suggest concrete changes that will help user to improve his verse. 
 
-In your response don't use ", [, {, and so on. But your Rizz Score should be on the scale to 100. 
-It's extremely important that in your answer you don't use any additional symbols, besides commas and periods.
+It's crucial that your answer should contain only 10 strings of text analysis, no longer than 8 words per string. 
+In the end of your analysis provide "Rizz Score" (0-100). Format score as: "SCORE: [number]"
 `;
 
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
+      const result = await chatSession.sendMessage(prompt);
+      const response = result.response;
       const text = response.text();
 
       // Extract score from the response
@@ -54,7 +84,7 @@ It's extremely important that in your answer you don't use any additional symbol
       }
 
       toast({
-        title: "AI Feedback",
+        title: "Keep improving",
         description: text,
       });
     } catch (error) {
@@ -74,7 +104,7 @@ It's extremely important that in your answer you don't use any additional symbol
       <h2 className="text-xl font-semibold mb-4">AI Chat Assistant</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <Textarea
-          placeholder="Type your message here..."
+          placeholder="Your rizz is here..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           className="min-h-[100px]"
@@ -84,7 +114,7 @@ It's extremely important that in your answer you don't use any additional symbol
           className="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90"
           disabled={isLoading}
         >
-          {isLoading ? "Getting Feedback..." : "Get Feedback"}
+          {isLoading ? "Getting Feedback..." : "Tinderrize"}
         </Button>
       </form>
     </Card>

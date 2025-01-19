@@ -3,17 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { GoogleGenerativeAI, DynamicRetrievalMode } from "@google/generative-ai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { supabase } from "@/integrations/supabase/client";
-
-// Config for ChatAssistant component
-const generationConfig = {
-  temperature: 0,
-  topP: 0.95,
-  topK: 40,
-  maxOutputTokens: 800,
-  responseMimeType: "text/plain",
-};
 
 export const ChatAssistant = ({ onScoreUpdate }: { onScoreUpdate: (score: number) => void }) => {
   const [message, setMessage] = useState("");
@@ -31,30 +22,10 @@ export const ChatAssistant = ({ onScoreUpdate }: { onScoreUpdate: (score: number
       });
       
       const genAI = new GoogleGenerativeAI(secrets.value);
-      const model = genAI.getGenerativeModel({
-        model: "gemini-2.0-flash-exp",
-        tools: [{
-          googleSearch: {
-            capabilities: {
-              search: true,
-            }
-          }
-        }]
-      }, { apiVersion: "v1beta" });
-
-      const chatSession = model.startChat({
-        generationConfig,
-        history: [
-          {
-            role: "user",
-            parts: [{ text: message }],
-          }
-        ],
-      });
+      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
       const prompt = `You are RizzMaster, world-class guru of Dating, a Tinderizzer AI.
-Analyze user message in ${message}. 
-Improve user's message for dating purposes. Answer in 10 strings max.
+Analyze user message: "${message}". Improve user's message for dating purposes. Answer in 10 strings max.
 Personalize his message, assess engagement on the scale from 1 to 10. Check for humor/wit and evaluate confidence of the message. 
 Look for originality and ensure relevance.
 Consider message context, check grammar and spelling, be careful though, as it might fit the context.
@@ -64,11 +35,14 @@ Highlight strengths of the rizz.
 Identify areas to improve and suggest concrete changes that will help user to improve his verse. 
 
 It's crucial that your answer should contain only 10 strings of text analysis, no longer than 8 words per string. 
-In the end of your analysis provide "Rizz Score" (0-100). Format score as: "SCORE: [number]"
+In the end of your analysis provide Rizz Score (0-100). Format score as: SCORE: [number]. 
+
+In your response don't use ", [, {, and so on. But your Rizz Score should be on the scale to 100. 
+It's extremely important that in your answer you don't use any additional symbols, besides commas and periods.
 `;
 
-      const result = await chatSession.sendMessage(prompt);
-      const response = result.response;
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
       const text = response.text();
 
       // Extract score from the response
@@ -81,7 +55,7 @@ In the end of your analysis provide "Rizz Score" (0-100). Format score as: "SCOR
       }
 
       toast({
-        title: "Keep improving",
+        title: "AI Feedback",
         description: text,
       });
     } catch (error) {
@@ -101,7 +75,7 @@ In the end of your analysis provide "Rizz Score" (0-100). Format score as: "SCOR
       <h2 className="text-xl font-semibold mb-4">AI Chat Assistant</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <Textarea
-          placeholder="Your rizz is here..."
+          placeholder="Type your initial rizz..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           className="min-h-[100px]"

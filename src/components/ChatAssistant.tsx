@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenerativeAI, DynamicRetrievalMode } from "@google/generative-ai";
 import { supabase } from "@/integrations/supabase/client";
 
 export const ChatAssistant = ({ onScoreUpdate }: { onScoreUpdate: (score: number) => void }) => {
@@ -26,14 +26,13 @@ export const ChatAssistant = ({ onScoreUpdate }: { onScoreUpdate: (score: number
 
       const prompt = `You are RizzMaster, world-class guru of Dating, a Tinderizzer AI.
 Analyze user message: "${message}". Improve user's message for dating purposes. Answer in 10 strings max.
-Personalize his message, assess engagement on the scale from 1 to 10. Check for humor/wit and evaluate confidence of the message. 
+Personalize his message. Check for humor/wit and evaluate confidence of the message. 
 Look for originality and ensure relevance.
 Consider message context, check grammar and spelling, be careful though, as it might fit the context.
 Provide the overall "rizz's" assessment. 
 Highlight strengths of the rizz.
 
-Identify areas to improve and suggest concrete changes that will help user to improve his verse. 
-
+Identify areas to improve and suggest concrete changes.
 It's crucial that your answer should contain only 10 strings of text analysis, no longer than 8 words per string. 
 In the end of your analysis provide Rizz Score (0-100). Format score as: SCORE: [number]. 
 

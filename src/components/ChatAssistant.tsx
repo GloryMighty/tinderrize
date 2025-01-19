@@ -6,6 +6,15 @@ import { useToast } from "@/hooks/use-toast";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { supabase } from "@/integrations/supabase/client";
 
+// Add this configuration before the ChatAssistant component
+const generationConfig = {
+  temperature: 0,
+  topP: 0.95,
+  topK: 40,
+  maxOutputTokens: 8192,
+  responseMimeType: "text/plain",
+};
+
 export const ChatAssistant = ({ onScoreUpdate }: { onScoreUpdate: (score: number) => void }) => {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -24,8 +33,19 @@ export const ChatAssistant = ({ onScoreUpdate }: { onScoreUpdate: (score: number
       const genAI = new GoogleGenerativeAI(secrets.value);
       const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
+      const chatSession = model.startChat({
+        generationConfig,
+        history: [
+          {
+            role: "user",
+            parts: [{ text: message }],
+          }
+        ],
+      });
+
       const prompt = `You are RizzMaster, world-class guru of Dating, a Tinderizzer AI.
-Analyze user message: "${message}". Improve user's message for dating purposes. Answer in 10 strings max.
+Analyze user message in ${message}. 
+Improve user's message for dating purposes. Answer in 10 strings max.
 Personalize his message, assess engagement on the scale from 1 to 10. Check for humor/wit and evaluate confidence of the message. 
 Look for originality and ensure relevance.
 Consider message context, check grammar and spelling, be careful though, as it might fit the context.
@@ -38,8 +58,8 @@ It's crucial that your answer should contain only 10 strings of text analysis, n
 In the end of your analysis provide "Rizz Score" (0-100). Format score as: "SCORE: [number]"
 `;
 
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
+      const result = await chatSession.sendMessage(prompt);
+      const response = result.response;
       const text = response.text();
 
       // Extract score from the response

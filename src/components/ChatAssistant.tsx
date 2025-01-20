@@ -33,9 +33,25 @@ export const ChatAssistant = ({ onScoreUpdate }: { onScoreUpdate: (score: number
         .from('user_credits')
         .select('tokens')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
-      if (!credits || credits.tokens < 1) {
+      if (!credits) {
+        // Create initial credits if they don't exist
+        const { data: newCredits } = await supabase
+          .from('user_credits')
+          .insert({ id: user.id, tokens: 10 })
+          .select('tokens')
+          .single();
+
+        if (!newCredits || newCredits.tokens < 1) {
+          toast({
+            title: "Insufficient tokens",
+            description: "Please upgrade to continue using this feature.",
+            variant: "destructive",
+          });
+          return;
+        }
+      } else if (credits.tokens < 1) {
         toast({
           title: "Insufficient tokens",
           description: "Please upgrade to continue using this feature.",
@@ -73,10 +89,14 @@ It's extremely important that in your answer you don't use any additional symbol
       const text = response.text();
 
       // Deduct token after successful API call
-      await supabase
+      const { error: updateError } = await supabase
         .from('user_credits')
-        .update({ tokens: credits.tokens - 1 })
+        .update({ tokens: credits ? credits.tokens - 1 : 9 })
         .eq('id', user.id);
+
+      if (updateError) {
+        console.error("Error updating credits:", updateError);
+      }
 
       // Extract score from the response
       const scoreMatch = text.match(/SCORE:\s*(\d+)/);

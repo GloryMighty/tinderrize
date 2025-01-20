@@ -14,10 +14,21 @@ export const UserCredits = () => {
           .from('user_credits')
           .select('tokens')
           .eq('id', user.id)
-          .single();
+          .maybeSingle();
         
         if (data) {
           setCredits(data.tokens);
+        } else {
+          // Handle case where user has no credits record
+          const { data: newCredits } = await supabase
+            .from('user_credits')
+            .insert({ id: user.id, tokens: 10 })
+            .select('tokens')
+            .single();
+          
+          if (newCredits) {
+            setCredits(newCredits.tokens);
+          }
         }
       }
     };

@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { supabase } from "@/integrations/supabase/client";
+import { UserCredits } from "./UserCredits";
 
 export const ChatAssistant = ({ onScoreUpdate }: { onScoreUpdate: (score: number) => void }) => {
   const [message, setMessage] = useState("");
@@ -17,6 +18,32 @@ export const ChatAssistant = ({ onScoreUpdate }: { onScoreUpdate: (score: number
 
     setIsLoading(true);
     try {
+      // Check user credits first
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "Please sign in to use this feature.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const { data: credits } = await supabase
+        .from('user_credits')
+        .select('tokens')
+        .eq('id', user.id)
+        .single();
+
+      if (!credits || credits.tokens < 1) {
+        toast({
+          title: "Insufficient tokens",
+          description: "Please upgrade to continue using this feature.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const { data: { secrets } } = await supabase.functions.invoke('get-secret', {
         body: { name: 'GEMINI_API_KEY' }
       });
@@ -45,6 +72,12 @@ It's extremely important that in your answer you don't use any additional symbol
       const response = await result.response;
       const text = response.text();
 
+      // Deduct token after successful API call
+      await supabase
+        .from('user_credits')
+        .update({ tokens: credits.tokens - 1 })
+        .eq('id', user.id);
+
       // Extract score from the response
       const scoreMatch = text.match(/SCORE:\s*(\d+)/);
       if (scoreMatch && scoreMatch[1]) {
@@ -72,7 +105,10 @@ It's extremely important that in your answer you don't use any additional symbol
 
   return (
     <Card className="p-6 w-full max-w-2xl mx-auto">
-      <h2 className="text-xl font-semibold mb-4">AI Chat Assistant</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold">AI Chat Assistant</h2>
+        <UserCredits />
+      </div>
       <form onSubmit={handleSubmit} className="space-y-4">
         <Textarea
           placeholder="Type your initial rizz..."

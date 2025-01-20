@@ -5,14 +5,14 @@ import { ChatAssistant } from "@/components/ChatAssistant";
 import { RizzApproaches } from "@/components/RizzApproaches";
 
 const Index = () => {
-  const [rizzScore, setRizzScore] = useState(75); // Default score
+  const [rizzScore, setRizzScore] = useState(75);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <Header />
-      <main className="container py-8 space-y-8">
+      <main className="container py-6 space-y-6">
         <RizzApproaches />
-        <div className="grid gap-8 md:grid-cols-[1fr_2fr]">
+        <div className="grid gap-6 md:grid-cols-[1fr_2fr]">
           <RizzScore score={rizzScore} />
           <ChatAssistant onScoreUpdate={setRizzScore} />
         </div>

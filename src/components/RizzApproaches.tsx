@@ -40,36 +40,37 @@ export const RizzApproaches = () => {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto mb-8 animate-fade-in">
-      <h2 className="text-3xl font-bold text-center mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+    <div className="w-full max-w-3xl mx-auto mb-6 animate-fade-in">
+      <h2 className="text-2xl font-bold text-center mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
         Choose Your Rizz Style
       </h2>
       
       <Tabs defaultValue="casual" className="w-full" onValueChange={setSelectedApproach}>
-        <TabsList className="grid w-full grid-cols-3 mb-8">
-          <TabsTrigger value="casual" className="text-lg">
+        <TabsList className="grid w-full grid-cols-3 mb-4">
+          <TabsTrigger value="casual" className="text-sm">
             Casual 😊
           </TabsTrigger>
-          <TabsTrigger value="sassy" className="text-lg">
+          <TabsTrigger value="sassy" className="text-sm">
             Sassy 😏
           </TabsTrigger>
-          <TabsTrigger value="toxic" className="text-lg">
+          <TabsTrigger value="toxic" className="text-sm">
             Toxic Boy 😈
           </TabsTrigger>
         </TabsList>
 
         {Object.entries(approaches).map(([approach, lines]) => (
-          <TabsContent key={approach} value={approach} className="space-y-4">
-            <div className="grid gap-4">
+          <TabsContent key={approach} value={approach} className="space-y-2">
+            <div className="grid gap-2">
               {lines.map((line, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between p-4 rounded-lg bg-white shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+                  className="flex items-center justify-between p-3 rounded-lg bg-background shadow-sm border border-border hover:shadow-md transition-shadow dark:bg-gray-800 dark:border-gray-700"
                 >
-                  <p className="text-gray-800 flex-1">{line}</p>
+                  <p className="text-sm text-foreground flex-1">{line}</p>
                   <Button
                     variant="ghost"
-                    className="ml-4 hover:bg-primary hover:text-white"
+                    size="sm"
+                    className="ml-2 hover:bg-primary hover:text-white dark:hover:bg-primary dark:text-gray-300"
                     onClick={() => copyToClipboard(line)}
                   >
                     Copy

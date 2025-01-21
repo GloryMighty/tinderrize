@@ -54,6 +54,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_preferences: {
+        Row: {
+          age: number | null
+          body_type: string | null
+          created_at: string
+          height: number | null
+          id: string
+          lifestyle: string | null
+          relationship_goal: string | null
+          rizz_style: string | null
+          updated_at: string
+        }
+        Insert: {
+          age?: number | null
+          body_type?: string | null
+          created_at?: string
+          height?: number | null
+          id: string
+          lifestyle?: string | null
+          relationship_goal?: string | null
+          rizz_style?: string | null
+          updated_at?: string
+        }
+        Update: {
+          age?: number | null
+          body_type?: string | null
+          created_at?: string
+          height?: number | null
+          id?: string
+          lifestyle?: string | null
+          relationship_goal?: string | null
+          rizz_style?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

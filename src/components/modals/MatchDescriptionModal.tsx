@@ -1,7 +1,10 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface MatchDescriptionModalProps {
   open: boolean;
@@ -37,6 +40,39 @@ export const MatchDescriptionModal = ({ open, onOpenChange }: MatchDescriptionMo
   const [bodyType, setBodyType] = useState("");
   const [lifestyle, setLifestyle] = useState("");
   const [relationshipGoal, setRelationshipGoal] = useState("");
+  const { toast } = useToast();
+
+  const handleSave = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('user_preferences')
+        .upsert({
+          id: user.id,
+          height: height[0],
+          age: age[0],
+          body_type: bodyType,
+          lifestyle,
+          relationship_goal: relationshipGoal,
+        }, { onConflict: 'id' });
+
+      if (error) throw error;
+      onOpenChange(false);
+      toast({
+        title: "Success",
+        description: "Your preferences have been saved!",
+      });
+    } catch (error) {
+      console.error('Error saving preferences:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save preferences. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -75,12 +111,16 @@ export const MatchDescriptionModal = ({ open, onOpenChange }: MatchDescriptionMo
           <div className="space-y-2">
             <label className="text-sm font-medium">Body Type</label>
             <Select value={bodyType} onValueChange={setBodyType}>
-              <SelectTrigger>
+              <SelectTrigger className="w-full bg-white/10 backdrop-blur-sm border-primary/20 hover:bg-white/20 transition-all duration-300">
                 <SelectValue placeholder="Select body type" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-background/95 backdrop-blur-sm border-primary/20">
                 {bodyTypes.map((type) => (
-                  <SelectItem key={type} value={type}>
+                  <SelectItem 
+                    key={type} 
+                    value={type}
+                    className="hover:bg-primary/10 transition-all duration-300"
+                  >
                     {type.charAt(0).toUpperCase() + type.slice(1)}
                   </SelectItem>
                 ))}
@@ -91,12 +131,16 @@ export const MatchDescriptionModal = ({ open, onOpenChange }: MatchDescriptionMo
           <div className="space-y-2">
             <label className="text-sm font-medium">Lifestyle</label>
             <Select value={lifestyle} onValueChange={setLifestyle}>
-              <SelectTrigger>
+              <SelectTrigger className="w-full bg-white/10 backdrop-blur-sm border-primary/20 hover:bg-white/20 transition-all duration-300">
                 <SelectValue placeholder="Select lifestyle" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-background/95 backdrop-blur-sm border-primary/20">
                 {lifestyles.map((style) => (
-                  <SelectItem key={style.value} value={style.value}>
+                  <SelectItem 
+                    key={style.value} 
+                    value={style.value}
+                    className="hover:bg-primary/10 transition-all duration-300"
+                  >
                     {style.label}
                   </SelectItem>
                 ))}
@@ -107,18 +151,29 @@ export const MatchDescriptionModal = ({ open, onOpenChange }: MatchDescriptionMo
           <div className="space-y-2">
             <label className="text-sm font-medium">Relationship Goals</label>
             <Select value={relationshipGoal} onValueChange={setRelationshipGoal}>
-              <SelectTrigger>
+              <SelectTrigger className="w-full bg-white/10 backdrop-blur-sm border-primary/20 hover:bg-white/20 transition-all duration-300">
                 <SelectValue placeholder="Select relationship goal" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-background/95 backdrop-blur-sm border-primary/20">
                 {relationshipGoals.map((goal) => (
-                  <SelectItem key={goal.value} value={goal.value}>
+                  <SelectItem 
+                    key={goal.value} 
+                    value={goal.value}
+                    className="hover:bg-primary/10 transition-all duration-300"
+                  >
                     {goal.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
+
+          <Button
+            onClick={handleSave}
+            className="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-all duration-300 mt-4"
+          >
+            Continue
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

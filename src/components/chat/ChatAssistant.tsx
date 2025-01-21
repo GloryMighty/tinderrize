@@ -31,6 +31,13 @@ export const ChatAssistant = ({ onScoreUpdate }: { onScoreUpdate: (score: number
         return;
       }
 
+      // Get user preferences
+      const { data: preferences } = await supabase
+        .from('user_preferences')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
       // In development, skip token check
       if (import.meta.env.DEV) {
         const { data: { secrets } } = await supabase.functions.invoke('get-secret', {
@@ -41,8 +48,17 @@ export const ChatAssistant = ({ onScoreUpdate }: { onScoreUpdate: (score: number
         const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
         const prompt = `You are RizzMaster, world-class guru of Dating, a Tinderizzer AI.
+User's preferences:
+- Rizz Style: ${preferences?.rizz_style || 'casual'}
+- Match Height: ${preferences?.height || 'Not specified'} cm
+- Match Age: ${preferences?.age || 'Not specified'} years
+- Match Body Type: ${preferences?.body_type || 'Not specified'}
+- Match Lifestyle: ${preferences?.lifestyle || 'Not specified'}
+- Relationship Goal: ${preferences?.relationship_goal || 'Not specified'}
+
 Analyze user message: "${message}". Improve user's message for dating purposes. Answer in 10 strings max.
-Personalize his message, assess engagement on the scale from 1 to 10. Check for humor/wit and evaluate confidence of the message. 
+Personalize his message based on the match preferences above.
+Assess engagement on the scale from 1 to 10. Check for humor/wit and evaluate confidence of the message. 
 Look for originality and ensure relevance.
 Consider message context, check grammar and spelling, be careful though, as it might fit the context.
 Provide the overall "rizz's" assessment. 

@@ -83,7 +83,9 @@ Provide the overall "rizz's" assessment.
 In your response don't use ", [, {, and so on. But your Rizz Score should be on the scale to 100. 
 It's extremely important that in your answer you don't use any additional symbols, besides commas and periods.`;
 
-        const result = await model.generateContent(prompt);
+        const parts = [{ text: prompt }];
+
+        const result = await model.generateContent({ contents: [{ role: "user", parts }] });
         const response = await result.response;
         const text = response.text();
 
@@ -160,7 +162,9 @@ Provide the overall "rizz's" assessment.
 In your response don't use ", [, {, and so on. But your Rizz Score should be on the scale to 100. 
 It's extremely important that in your answer you don't use any additional symbols, besides commas and periods.`;
 
-      const result = await model.generateContent(prompt);
+      const parts = [{ text: prompt }];
+
+      const result = await model.generateContent({ contents: [{ role: "user", parts }] });
       const response = await result.response;
       const text = response.text();
 

@@ -5,20 +5,27 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { supabase } from "@/integrations/supabase/client";
 import { UserCredits } from "../UserCredits";
 import { ChatInput } from "./ChatInput";
-import { RizzStyleModal } from "../modals/RizzStyleModal";
-import { MatchDescriptionModal } from "../modals/MatchDescriptionModal";
+import { ChatMessage as ChatMessageType } from "@/types/chat";
+import { ChatMessage } from "./ChatMessage";
 
 export const ChatAssistant = ({ onScoreUpdate }: { onScoreUpdate: (score: number) => void }) => {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [showRizzStyle, setShowRizzStyle] = useState(true);
-  const [showMatchDescription, setShowMatchDescription] = useState(false);
+  const [messages, setMessages] = useState<ChatMessageType[]>([]);
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim()) return;
 
+    // Add user message to chat
+    const userMessage: ChatMessageType = {
+      role: 'user',
+      content: message,
+      timestamp: new Date(),
+    };
+    setMessages(prev => [...prev, userMessage]);
+    
     setIsLoading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -47,6 +54,14 @@ export const ChatAssistant = ({ onScoreUpdate }: { onScoreUpdate: (score: number
         const genAI = new GoogleGenerativeAI(secrets.value);
         const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
+        // Create chat with history
+        const chat = model.startChat({
+          history: messages.map(msg => ({
+            role: msg.role,
+            parts: [msg.content]
+          }))
+        });
+
         const prompt = `You are RizzMaster, world-class guru of Dating, a Tinderizzer AI.
 User's preferences:
 - Rizz Style: ${preferences?.rizz_style || 'casual'}
@@ -72,7 +87,7 @@ In the end of your analysis provide Rizz Score (0-100). Format score as: SCORE: 
 In your response don't use ", [, {, and so on. But your Rizz Score should be on the scale to 100. 
 It's extremely important that in your answer you don't use any additional symbols, besides commas and periods.`;
 
-        const result = await model.generateContent(prompt);
+        const result = await chat.sendMessage(prompt);
         const response = await result.response;
         const text = response.text();
 
@@ -84,10 +99,14 @@ It's extremely important that in your answer you don't use any additional symbol
           }
         }
 
-        toast({
-          title: "AI Feedback",
-          description: text,
-        });
+        // Add AI response to chat
+        const aiMessage: ChatMessageType = {
+          role: 'assistant',
+          content: text,
+          timestamp: new Date(),
+        };
+        setMessages(prev => [...prev, aiMessage]);
+        setMessage("");
         return;
       }
 
@@ -98,22 +117,7 @@ It's extremely important that in your answer you don't use any additional symbol
         .eq('id', user.id)
         .maybeSingle();
 
-      if (!credits) {
-        const { data: newCredits } = await supabase
-          .from('user_credits')
-          .insert({ id: user.id, tokens: 10 })
-          .select('tokens')
-          .single();
-
-        if (!newCredits || newCredits.tokens < 1) {
-          toast({
-            title: "Insufficient tokens",
-            description: "Please upgrade to continue using this feature.",
-            variant: "destructive",
-          });
-          return;
-        }
-      } else if (credits.tokens < 1) {
+      if (!credits || credits.tokens < 1) {
         toast({
           title: "Insufficient tokens",
           description: "Please upgrade to continue using this feature.",
@@ -128,6 +132,14 @@ It's extremely important that in your answer you don't use any additional symbol
       
       const genAI = new GoogleGenerativeAI(secrets.value);
       const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+
+      // Create chat with history
+      const chat = model.startChat({
+        history: messages.map(msg => ({
+          role: msg.role,
+          parts: [msg.content]
+        }))
+      });
 
       const prompt = `You are RizzMaster, world-class guru of Dating, a Tinderizzer AI.
 Analyze user message: "${message}". Improve user's message for dating purposes. Answer in 10 strings max.
@@ -145,14 +157,14 @@ In the end of your analysis provide Rizz Score (0-100). Format score as: SCORE: 
 In your response don't use ", [, {, and so on. But your Rizz Score should be on the scale to 100. 
 It's extremely important that in your answer you don't use any additional symbols, besides commas and periods.`;
 
-      const result = await model.generateContent(prompt);
+      const result = await chat.sendMessage(prompt);
       const response = await result.response;
       const text = response.text();
 
       // Deduct token after successful API call (only in production)
       const { error: updateError } = await supabase
         .from('user_credits')
-        .update({ tokens: credits ? credits.tokens - 1 : 9 })
+        .update({ tokens: credits.tokens - 1 })
         .eq('id', user.id);
 
       if (updateError) {
@@ -167,10 +179,15 @@ It's extremely important that in your answer you don't use any additional symbol
         }
       }
 
-      toast({
-        title: "AI Feedback",
-        description: text,
-      });
+      // Add AI response to chat
+      const aiMessage: ChatMessageType = {
+        role: 'assistant',
+        content: text,
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, aiMessage]);
+      setMessage("");
+
     } catch (error) {
       console.error("Error getting AI feedback:", error);
       toast({
@@ -183,11 +200,6 @@ It's extremely important that in your answer you don't use any additional symbol
     }
   };
 
-  const handleRizzStyleClose = () => {
-    setShowRizzStyle(false);
-    setShowMatchDescription(true);
-  };
-
   return (
     <Card className="h-full p-6 bg-gradient-to-b from-white/5 to-primary/5 backdrop-blur-sm border-primary/10 shadow-xl overflow-hidden flex flex-col">
       <div className="flex justify-between items-center mb-6">
@@ -196,20 +208,16 @@ It's extremely important that in your answer you don't use any additional symbol
         </h2>
         {!import.meta.env.DEV && <UserCredits />}
       </div>
-      <div className="flex-1 overflow-y-auto mb-6 scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
-        {/* Chat messages will go here */}
+      <div className="flex-1 overflow-y-auto mb-6 px-4 space-y-4 scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
+        {messages.map((msg, index) => (
+          <ChatMessage key={index} message={msg} />
+        ))}
       </div>
       <ChatInput
         message={message}
         setMessage={setMessage}
         onSubmit={handleSubmit}
         isLoading={isLoading}
-      />
-
-      <RizzStyleModal open={showRizzStyle} onOpenChange={handleRizzStyleClose} />
-      <MatchDescriptionModal
-        open={showMatchDescription}
-        onOpenChange={setShowMatchDescription}
       />
     </Card>
   );

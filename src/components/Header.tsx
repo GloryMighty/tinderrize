@@ -3,10 +3,23 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { RizzStyleModal } from "./modals/RizzStyleModal";
+import { MatchDescriptionModal } from "./modals/MatchDescriptionModal";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { User } from "lucide-react";
 
 export const Header = () => {
   const navigate = useNavigate();
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [rizzStyle, setRizzStyle] = useState("casual");
+  const [isRizzStyleModalOpen, setIsRizzStyleModalOpen] = useState(false);
+  const [isMatchModalOpen, setIsMatchModalOpen] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -36,25 +49,66 @@ export const Header = () => {
           </h1>
         </div>
         <div className="flex items-center gap-4">
-          {userEmail && (
-            <span className="text-sm text-muted-foreground">{userEmail}</span>
-          )}
-          <ThemeToggle />
+          <Select value={rizzStyle} onValueChange={(value) => {
+            setRizzStyle(value);
+            setIsRizzStyleModalOpen(true);
+          }}>
+            <SelectTrigger className="w-[200px] bg-white/10 backdrop-blur-sm border-primary/20">
+              <SelectValue placeholder="Select rizz style" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="casual">Casual 😊</SelectItem>
+              <SelectItem value="sassy">Sassy 😏</SelectItem>
+              <SelectItem value="toxic">Toxic Boy 😈</SelectItem>
+            </SelectContent>
+          </Select>
+
           <Button
-            variant="ghost"
-            className="text-gray-600 hover:text-primary dark:text-gray-300"
-            onClick={handleSignOut}
+            variant="outline"
+            onClick={() => setIsMatchModalOpen(true)}
+            className="bg-white/10 backdrop-blur-sm border-primary/20"
           >
-            Sign out
+            Edit Match Preferences
           </Button>
+
+          <ThemeToggle />
+
           <Button
             className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white"
             onClick={() => navigate("/upgrade")}
           >
             Upgrade
           </Button>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                <User className="h-5 w-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56" align="end">
+              {userEmail && (
+                <DropdownMenuItem className="text-sm text-muted-foreground cursor-default">
+                  {userEmail}
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuItem onClick={handleSignOut}>
+                Sign out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
+
+      <RizzStyleModal
+        open={isRizzStyleModalOpen}
+        onOpenChange={setIsRizzStyleModalOpen}
+      />
+      
+      <MatchDescriptionModal
+        open={isMatchModalOpen}
+        onOpenChange={setIsMatchModalOpen}
+      />
     </header>
   );
 };

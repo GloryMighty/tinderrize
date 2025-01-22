@@ -3,22 +3,23 @@ import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { supabase } from "@/integrations/supabase/client";
-import { UserCredits } from "../UserCredits";
 import { ChatInput } from "./ChatInput";
 import { ChatMessage as ChatMessageType } from "@/types/chat";
-import { ChatMessage } from "./ChatMessage";
+import { ChatHistory } from "./ChatHistory";
+import { ChatHeader } from "./ChatHeader";
+import { PreferencesPanel } from "./PreferencesPanel";
 
 export const ChatAssistant = ({ onScoreUpdate }: { onScoreUpdate: (score: number) => void }) => {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<ChatMessageType[]>([]);
+  const [rizzStyle, setRizzStyle] = useState("casual");
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim()) return;
 
-    // Add user message to chat
     const userMessage: ChatMessageType = {
       role: 'user',
       content: message,
@@ -54,7 +55,6 @@ export const ChatAssistant = ({ onScoreUpdate }: { onScoreUpdate: (score: number
         const genAI = new GoogleGenerativeAI(secrets.value);
         const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
-        // Create chat with history
         const chat = model.startChat({
           history: messages.map(msg => ({
             role: msg.role,
@@ -64,28 +64,14 @@ export const ChatAssistant = ({ onScoreUpdate }: { onScoreUpdate: (score: number
 
         const prompt = `You are RizzMaster, world-class guru of Dating, a Tinderizzer AI.
 User's preferences:
-- Rizz Style: ${preferences?.rizz_style || 'casual'}
+- Rizz Style: ${preferences?.rizz_style || rizzStyle}
 - Match Height: ${preferences?.height || 'Not specified'} cm
 - Match Age: ${preferences?.age || 'Not specified'} years
 - Match Body Type: ${preferences?.body_type || 'Not specified'}
 - Match Lifestyle: ${preferences?.lifestyle || 'Not specified'}
 - Relationship Goal: ${preferences?.relationship_goal || 'Not specified'}
 
-Analyze user message: "${message}". Improve user's message for dating purposes. Answer in 10 strings max.
-Personalize his message based on the match preferences above.
-Assess engagement on the scale from 1 to 10. Check for humor/wit and evaluate confidence of the message. 
-Look for originality and ensure relevance.
-Consider message context, check grammar and spelling, be careful though, as it might fit the context.
-Provide the overall "rizz's" assessment. 
-Highlight strengths of the rizz.
-
-Identify areas to improve and suggest concrete changes that will help user to improve his verse. 
-
-It's crucial that your answer should contain only 10 strings of text analysis, no longer than 8 words per string. 
-In the end of your analysis provide Rizz Score (0-100). Format score as: SCORE: [number]. 
-
-In your response don't use ", [, {, and so on. But your Rizz Score should be on the scale to 100. 
-It's extremely important that in your answer you don't use any additional symbols, besides commas and periods.`;
+Analyze user message: "${message}". Improve user's message for dating purposes.`;
 
         const result = await chat.sendMessage(prompt);
         const response = await result.response;
@@ -99,7 +85,6 @@ It's extremely important that in your answer you don't use any additional symbol
           }
         }
 
-        // Add AI response to chat
         const aiMessage: ChatMessageType = {
           role: 'assistant',
           content: text,
@@ -202,17 +187,12 @@ It's extremely important that in your answer you don't use any additional symbol
 
   return (
     <Card className="h-full p-6 bg-gradient-to-b from-white/5 to-primary/5 backdrop-blur-sm border-primary/10 shadow-xl overflow-hidden flex flex-col">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-semibold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-          AI Chat Assistant
-        </h2>
-        {!import.meta.env.DEV && <UserCredits />}
-      </div>
-      <div className="flex-1 overflow-y-auto mb-6 px-4 space-y-4 scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
-        {messages.map((msg, index) => (
-          <ChatMessage key={index} message={msg} />
-        ))}
-      </div>
+      <ChatHeader />
+      <PreferencesPanel 
+        rizzStyle={rizzStyle}
+        onRizzStyleChange={setRizzStyle}
+      />
+      <ChatHistory messages={messages} />
       <ChatInput
         message={message}
         setMessage={setMessage}

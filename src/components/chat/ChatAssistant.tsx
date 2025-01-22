@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { GoogleGenerativeAI } from "@google/generative-ai";
@@ -9,12 +9,37 @@ import { ChatHistory } from "./ChatHistory";
 import { ChatHeader } from "./ChatHeader";
 import { PreferencesPanel } from "./PreferencesPanel";
 
+interface UserPreferences {
+  rizz_style?: string;
+  height?: number;
+  age?: number;
+  body_type?: string;
+  lifestyle?: string;
+  relationship_goal?: string;
+}
+
 export const ChatAssistant = ({ onScoreUpdate }: { onScoreUpdate: (score: number) => void }) => {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<ChatMessageType[]>([]);
   const [rizzStyle, setRizzStyle] = useState("casual");
+  const [preferences, setPreferences] = useState<UserPreferences | null>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchPreferences = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data } = await supabase
+          .from('user_preferences')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+        setPreferences(data);
+      }
+    };
+    fetchPreferences();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,13 +64,6 @@ export const ChatAssistant = ({ onScoreUpdate }: { onScoreUpdate: (score: number
         return;
       }
 
-      // Get user preferences
-      const { data: preferences } = await supabase
-        .from('user_preferences')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-
       // In development, skip token check
       if (import.meta.env.DEV) {
         const { data: { secrets } } = await supabase.functions.invoke('get-secret', {
@@ -57,8 +75,8 @@ export const ChatAssistant = ({ onScoreUpdate }: { onScoreUpdate: (score: number
 
         const chat = model.startChat({
           history: messages.map(msg => ({
-            role: msg.role,
-            parts: [msg.content]
+            role: msg.role === 'user' ? 'user' : 'model',
+            parts: [{ text: msg.content }]
           }))
         });
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,10 +7,35 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { supabase } from "@/integrations/supabase/client";
 import { UserCredits } from "./UserCredits";
 
+interface UserPreferences {
+  rizz_style?: string;
+  height?: number;
+  age?: number;
+  body_type?: string;
+  lifestyle?: string;
+  relationship_goal?: string;
+}
+
 export const ChatAssistant = ({ onScoreUpdate }: { onScoreUpdate: (score: number) => void }) => {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [preferences, setPreferences] = useState<UserPreferences | null>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchPreferences = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data } = await supabase
+          .from('user_preferences')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+        setPreferences(data);
+      }
+    };
+    fetchPreferences();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,7 +62,7 @@ export const ChatAssistant = ({ onScoreUpdate }: { onScoreUpdate: (score: number
         const genAI = new GoogleGenerativeAI(secrets.value);
         const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
-        const prompt = `You're the world class dating guru. Your taslk is to analyse user's inputs and how applicable they are to the user's matches:
+        const prompt = `You're the world class dating guru. Your task is to analyse user's inputs and how applicable they are to the user's matches:
 
 User's preferences:
 - Rizz Style: ${preferences?.rizz_style || 'casual'}
@@ -77,7 +102,6 @@ It's extremely important that in your answer you don't use any additional symbol
         return;
       }
 
-      // Production token check logic
       const { data: credits } = await supabase
         .from('user_credits')
         .select('tokens')
@@ -162,6 +186,7 @@ It's extremely important that in your answer you don't use any additional symbol
         title: "AI Feedback",
         description: text,
       });
+
     } catch (error) {
       console.error("Error getting AI feedback:", error);
       toast({

@@ -85,9 +85,16 @@ It's extremely important that in your answer you don't use any additional symbol
 
         const parts = [{ text: prompt }];
 
-        const result = await model.generateContent({ contents: [{ role: "user", parts }] });
-        const response = await result.response;
-        const text = response.text();
+        let text = "";
+        const result = await model.generateContentStream({ contents: [{ role: "user", parts }] });
+        for await (const chunk of result.stream) {
+          const chunkText = chunk.text();
+          text += chunkText;
+          toast({
+            title: "AI Feedback",
+            description: text,
+          });
+        }
 
         const scoreMatch = text.match(/SCORE:\s*(\d+)/);
         if (scoreMatch && scoreMatch[1]) {
@@ -96,11 +103,6 @@ It's extremely important that in your answer you don't use any additional symbol
             onScoreUpdate(score);
           }
         }
-
-        toast({
-          title: "AI Feedback",
-          description: text,
-        });
         return;
       }
 
@@ -164,9 +166,16 @@ It's extremely important that in your answer you don't use any additional symbol
 
       const parts = [{ text: prompt }];
 
-      const result = await model.generateContent({ contents: [{ role: "user", parts }] });
-      const response = await result.response;
-      const text = response.text();
+      let text = "";
+      const result = await model.generateContentStream({ contents: [{ role: "user", parts }] });
+        for await (const chunk of result.stream) {
+          const chunkText = chunk.text();
+          text += chunkText;
+          toast({
+            title: "AI Feedback",
+            description: text,
+          });
+        }
 
       // Deduct token after successful API call (only in production)
       const { error: updateError } = await supabase
@@ -186,10 +195,6 @@ It's extremely important that in your answer you don't use any additional symbol
         }
       }
 
-      toast({
-        title: "AI Feedback",
-        description: text,
-      });
 
     } catch (error) {
       console.error("Error getting AI feedback:", error);

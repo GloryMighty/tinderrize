@@ -189,27 +189,28 @@ It's extremely important that in your answer you don't use any additional symbol
   };
 
   return (
-    <>
-      <Card className="p-6 w-full max-w-2xl mx-auto bg-white/5 backdrop-blur-sm border-primary/10 shadow-xl">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-semibold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            AI Chat Assistant
-          </h2>
-          {!import.meta.env.DEV && <UserCredits />}
-        </div>
-        <ChatInput
-          message={message}
-          setMessage={setMessage}
-          onSubmit={handleSubmit}
-          isLoading={isLoading}
-        />
-      </Card>
+    <Card className="h-full p-6 bg-gradient-to-b from-white/5 to-primary/5 backdrop-blur-sm border-primary/10 shadow-xl overflow-hidden flex flex-col">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-semibold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          AI Chat Assistant
+        </h2>
+        {!import.meta.env.DEV && <UserCredits />}
+      </div>
+      <div className="flex-1 overflow-y-auto mb-6 scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
+        {/* Chat messages will go here */}
+      </div>
+      <ChatInput
+        message={message}
+        setMessage={setMessage}
+        onSubmit={handleSubmit}
+        isLoading={isLoading}
+      />
 
       <RizzStyleModal open={showRizzStyle} onOpenChange={handleRizzStyleClose} />
       <MatchDescriptionModal
         open={showMatchDescription}
         onOpenChange={setShowMatchDescription}
       />
-    </>
+    </Card>
   );
 };

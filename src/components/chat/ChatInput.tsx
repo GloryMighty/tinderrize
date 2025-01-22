@@ -10,12 +10,12 @@ interface ChatInputProps {
 
 export const ChatInput = ({ message, setMessage, onSubmit, isLoading }: ChatInputProps) => {
   return (
-    <form onSubmit={onSubmit} className="space-y-6">
+    <form onSubmit={onSubmit} className="space-y-4">
       <Textarea
         placeholder="Type your initial rizz..."
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        className="min-h-[120px] bg-white/10 border-primary/20 focus:border-primary/40 placeholder:text-gray-400"
+        className="min-h-[120px] bg-white/10 border-primary/20 focus:border-primary/40 placeholder:text-gray-400 resize-none"
       />
       <Button
         type="submit"

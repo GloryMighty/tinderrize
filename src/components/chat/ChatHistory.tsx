@@ -7,7 +7,7 @@ interface ChatHistoryProps {
 
 export const ChatHistory = ({ messages }: ChatHistoryProps) => {
   return (
-    <div className="flex-1 overflow-y-auto mb-6 px-4 space-y-4 scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
+    <div className="flex-1 overflow-y-auto mb-6 px-4 space-y-6 scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
       {messages.map((msg, index) => (
         <ChatMessage key={index} message={msg} />
       ))}

@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Send } from "lucide-react";
 
 interface ChatInputProps {
   message: string;
@@ -11,19 +12,22 @@ interface ChatInputProps {
 export const ChatInput = ({ message, setMessage, onSubmit, isLoading }: ChatInputProps) => {
   return (
     <form onSubmit={onSubmit} className="space-y-4">
-      <Textarea
-        placeholder="Type your initial rizz..."
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        className="min-h-[120px] bg-white/10 border-primary/20 focus:border-primary/40 placeholder:text-gray-400 resize-none"
-      />
-      <Button
-        type="submit"
-        className="w-full bg-gradient-to-r from-primary via-secondary to-accent hover:opacity-90 transition-all duration-300 transform hover:scale-[1.02] shadow-lg"
-        disabled={isLoading}
-      >
-        {isLoading ? "Getting Feedback..." : "Tinderrize"}
-      </Button>
+      <div className="relative">
+        <Textarea
+          placeholder="Type your message..."
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          className="min-h-[120px] bg-white/10 border-primary/20 focus:border-primary/40 placeholder:text-gray-400 pr-12 resize-none"
+        />
+        <Button
+          type="submit"
+          size="icon"
+          className="absolute bottom-4 right-4 bg-primary/20 hover:bg-primary/30"
+          disabled={isLoading}
+        >
+          <Send className="h-4 w-4" />
+        </Button>
+      </div>
     </form>
   );
 };

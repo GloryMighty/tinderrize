@@ -11,6 +11,11 @@ export const ChatHistory = ({ messages }: ChatHistoryProps) => {
       {messages.map((msg, index) => (
         <ChatMessage key={index} message={msg} />
       ))}
+      {messages.length === 0 && (
+        <div className="text-center text-muted-foreground p-4">
+          Start the conversation by sending a message...
+        </div>
+      )}
     </div>
   );
 };

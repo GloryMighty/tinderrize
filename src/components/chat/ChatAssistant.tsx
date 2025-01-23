@@ -37,6 +37,7 @@ export const ChatAssistant = ({ onScoreUpdate, onFirstMessage }: ChatAssistantPr
       timestamp: new Date(),
     };
     setMessages(prev => [...prev, userMessage]);
+    setMessage("");
     
     setIsLoading(true);
     try {
@@ -72,7 +73,6 @@ export const ChatAssistant = ({ onScoreUpdate, onFirstMessage }: ChatAssistantPr
           timestamp: new Date(),
         };
         setMessages(prev => [...prev, aiMessage]);
-        setMessage("");
         return;
       }
 
@@ -121,7 +121,6 @@ export const ChatAssistant = ({ onScoreUpdate, onFirstMessage }: ChatAssistantPr
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, aiMessage]);
-      setMessage("");
 
     } catch (error) {
       console.error("Error getting AI feedback:", error);

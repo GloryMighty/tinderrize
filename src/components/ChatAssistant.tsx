@@ -16,12 +16,53 @@ interface UserPreferences {
   relationship_goal?: string;
 }
 
+interface ChatHistory {
+  role: "user" | "assistant";
+  content: string;
+}
+
+// Define the generation config for the model
+const GENERATION_CONFIG = {
+  temperature: 0.7,
+  topP: 0.8,
+  topK: 40,
+  maxOutputTokens: 1000,
+};
+
+const SYSTEM_PROMPT = `You are Tinderrizer, an expert dating coach specializing in message analysis and improvement.
+You help users craft better messages based on their match's preferences and characteristics.
+
+IMPORTANT: Your response MUST strictly follow this format, using exactly these section headers:
+
+ANALYSIS
+A brief, 2-3 sentence analysis focusing on the message's key strengths and areas for improvement.
+
+IMPROVED VERSION
+A single improved version of the message, tailored to the match's preferences.
+
+ENGAGEMENT METRICS
+Humor: [Score 1-10]
+Confidence: [Score 1-10]
+Authenticity: [Score 1-10]
+Match Alignment: [Score 1-10] (how well it aligns with match preferences)
+
+RIZZ SCORE: [0-100]
+
+Rules:
+1. Use ONLY the section headers above
+2. Keep responses concise and actionable
+3. Base improvements on match preferences
+4. Use only periods and commas for punctuation
+5. Ensure the improved version maintains user's original intent`;
+
 export const ChatAssistant = ({ onScoreUpdate }: { onScoreUpdate: (score: number) => void }) => {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [preferences, setPreferences] = useState<UserPreferences | null>(null);
+  const [chatHistory, setChatHistory] = useState<ChatHistory[]>([]);
   const { toast } = useToast();
 
+  // Fetch user preferences on component mount
   useEffect(() => {
     const fetchPreferences = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -36,6 +77,33 @@ export const ChatAssistant = ({ onScoreUpdate }: { onScoreUpdate: (score: number
     };
     fetchPreferences();
   }, []);
+
+  const getPrompt = (userMessage: string, history: ChatHistory[]) => {
+    const matchContext = preferences ? `
+MATCH CONTEXT
+Style Preference: ${preferences.rizz_style || 'Not specified'}
+Height: ${preferences.height ? preferences.height + 'cm' : 'Not specified'}
+Age: ${preferences.age ? preferences.age + ' years' : 'Not specified'}
+Body Type: ${preferences.body_type || 'Not specified'}
+Lifestyle: ${preferences.lifestyle || 'Not specified'}
+Relationship Goal: ${preferences.relationship_goal || 'Not specified'}
+
+Consider these match preferences carefully when analyzing and improving the message.` : '';
+
+    const historyContext = history.length > 0 ? 
+      "\nPREVIOUS INTERACTIONS:\n" + history.slice(-2).map(msg => 
+        `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.content}`
+      ).join('\n') : '';
+
+    return `${SYSTEM_PROMPT}
+
+${matchContext}
+${historyContext}
+
+MESSAGE TO ANALYZE: ${userMessage}
+
+Provide your analysis and improvements following the exact format specified above.`;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,72 +130,49 @@ export const ChatAssistant = ({ onScoreUpdate }: { onScoreUpdate: (score: number
         const genAI = new GoogleGenerativeAI(secrets.value);
         const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
-        const prompt = `You're the world class dating guru. Your task is to analyse user's inputs and how applicable they are to the user's matches:
+        const prompt = getPrompt(message, chatHistory);
+        
+        const result = await model.generateContent({
+          contents: [{ role: "user", parts: [{ text: prompt }] }],
+          generationConfig: GENERATION_CONFIG,
+        });
 
-User's preferences:
-- Rizz Style: ${preferences?.rizz_style || 'casual'}
-- Match Height: ${preferences?.height || 'Not specified'} cm
-- Match Age: ${preferences?.age || 'Not specified'} years
-- Match Body Type: ${preferences?.body_type || 'Not specified'}
-- Match Lifestyle: ${preferences?.lifestyle || 'Not specified'}
-- Relationship Goal: ${preferences?.relationship_goal || 'Not specified'}
+        const responseText = result.response.text();
+        
+        // Update chat history
+        setChatHistory(prev => [
+          ...prev,
+          { role: "user", content: message },
+          { role: "assistant", content: responseText }
+        ]);
 
-Analyze user message: "${message}". Improve user's message for dating purposes. Answer in 10 strings max.
-Personalize his message, assess engagement on the scale from 1 to 10. Check for humor/wit and evaluate confidence of the message. 
-Personalize his message based on the match preferences above.
-Assess engagement on the scale from 1 to 10. Check for humor/wit and evaluate confidence of the message. 
-Look for originality and ensure relevance.
-Consider message context, check grammar and spelling, be careful though, as it might fit the context.
-Provide the overall "rizz's" assessment. 
-
-In your response don't use ", [, {, and so on. But your Rizz Score should be on the scale to 100. 
-It's extremely important that in your answer you don't use any additional symbols, besides commas and periods.`;
-
-        const parts = [{ text: prompt }];
-
-        let text = "";
-        const result = await model.generateContentStream({ contents: [{ role: "user", parts }] });
-        for await (const chunk of result.stream) {
-          const chunkText = chunk.text();
-          text += chunkText;
-          toast({
-            title: "AI Feedback",
-            description: text,
-          });
-        }
-
-        const scoreMatch = text.match(/SCORE:\s*(\d+)/);
+        // Parse score with more specific regex
+        const scoreMatch = responseText.match(/RIZZ SCORE:\s*(\d{1,3})/);
         if (scoreMatch && scoreMatch[1]) {
           const score = parseInt(scoreMatch[1], 10);
           if (score >= 0 && score <= 100) {
             onScoreUpdate(score);
           }
         }
+
+        toast({
+          title: "Analysis Complete",
+          description: responseText,
+          duration: 10000,
+        });
+
+        setMessage("");
         return;
       }
 
+      // Production flow
       const { data: credits } = await supabase
         .from('user_credits')
         .select('tokens')
         .eq('id', user.id)
         .maybeSingle();
 
-      if (!credits) {
-        const { data: newCredits } = await supabase
-          .from('user_credits')
-          .insert({ id: user.id, tokens: 10 })
-          .select('tokens')
-          .single();
-
-        if (!newCredits || newCredits.tokens < 1) {
-          toast({
-            title: "Insufficient tokens",
-            description: "Please upgrade to continue using this feature.",
-            variant: "destructive",
-          });
-          return;
-        }
-      } else if (credits.tokens < 1) {
+      if (!credits || credits.tokens < 1) {
         toast({
           title: "Insufficient tokens",
           description: "Please upgrade to continue using this feature.",
@@ -142,52 +187,39 @@ It's extremely important that in your answer you don't use any additional symbol
       
       const genAI = new GoogleGenerativeAI(secrets.value);
       const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+      const prompt = getPrompt(message, chatHistory);
 
-      const prompt = `You're the world class dating guru. Your taslk is to analyse user's inputs and how applicable they are to the user's matches:
+      const result = await model.generateContent({
+        contents: [
+          {
+            role: "user",
+            parts: [{ text: prompt }]
+          }
+        ],
+        generationConfig: GENERATION_CONFIG
+      });
 
-User's preferences:
-- Rizz Style: ${preferences?.rizz_style || 'casual'}
-- Match Height: ${preferences?.height || 'Not specified'} cm
-- Match Age: ${preferences?.age || 'Not specified'} years
-- Match Body Type: ${preferences?.body_type || 'Not specified'}
-- Match Lifestyle: ${preferences?.lifestyle || 'Not specified'}
-- Relationship Goal: ${preferences?.relationship_goal || 'Not specified'}
+      const responseText = result.response.text();
 
-Analyze user message: "${message}". Improve user's message for dating purposes. Answer in 10 strings max.
-Personalize his message, assess engagement on the scale from 1 to 10. Check for humor/wit and evaluate confidence of the message. 
-Personalize his message based on the match preferences above.
-Assess engagement on the scale from 1 to 10. Check for humor/wit and evaluate confidence of the message. 
-Look for originality and ensure relevance.
-Consider message context, check grammar and spelling, be careful though, as it might fit the context.
-Provide the overall "rizz's" assessment. 
-
-In your response don't use ", [, {, and so on. But your Rizz Score should be on the scale to 100. 
-It's extremely important that in your answer you don't use any additional symbols, besides commas and periods.`;
-
-      const parts = [{ text: prompt }];
-
-      let text = "";
-      const result = await model.generateContentStream({ contents: [{ role: "user", parts }] });
-        for await (const chunk of result.stream) {
-          const chunkText = chunk.text();
-          text += chunkText;
-          toast({
-            title: "AI Feedback",
-            description: text,
-          });
-        }
-
-      // Deduct token after successful API call (only in production)
+      // Deduct token after successful response
       const { error: updateError } = await supabase
         .from('user_credits')
-        .update({ tokens: credits ? credits.tokens - 1 : 9 })
+        .update({ tokens: credits.tokens - 1 })
         .eq('id', user.id);
 
       if (updateError) {
         console.error("Error updating credits:", updateError);
       }
 
-      const scoreMatch = text.match(/SCORE:\s*(\d+)/);
+      // Update chat history
+      setChatHistory(prev => [
+        ...prev,
+        { role: "user", content: message },
+        { role: "assistant", content: responseText }
+      ]);
+
+      // Parse score with more specific regex
+      const scoreMatch = responseText.match(/RIZZ SCORE:\s*(\d{1,3})/);
       if (scoreMatch && scoreMatch[1]) {
         const score = parseInt(scoreMatch[1], 10);
         if (score >= 0 && score <= 100) {
@@ -195,7 +227,13 @@ It's extremely important that in your answer you don't use any additional symbol
         }
       }
 
+      toast({
+        title: "Analysis Complete",
+        description: responseText,
+        duration: 10000,
+      });
 
+      setMessage("");
     } catch (error) {
       console.error("Error getting AI feedback:", error);
       toast({
@@ -211,12 +249,12 @@ It's extremely important that in your answer you don't use any additional symbol
   return (
     <Card className="p-6 w-full max-w-2xl mx-auto bg-white/5 backdrop-blur-sm border-primary/10 shadow-xl">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-semibold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">AI Chat Assistant</h2>
+        <h2 className="text-2xl font-semibold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Tinderrizer</h2>
         {!import.meta.env.DEV && <UserCredits />}
       </div>
       <form onSubmit={handleSubmit} className="space-y-6">
         <Textarea
-          placeholder="Type your initial rizz..."
+          placeholder="Type your rizz..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           className="min-h-[120px] bg-white/10 border-primary/20 focus:border-primary/40 placeholder:text-gray-400"
@@ -226,7 +264,7 @@ It's extremely important that in your answer you don't use any additional symbol
           className="w-full bg-gradient-to-r from-primary via-secondary to-accent hover:opacity-90 transition-all duration-300 transform hover:scale-[1.02] shadow-lg"
           disabled={isLoading}
         >
-          {isLoading ? "Getting Feedback..." : "Tinderrize"}
+          {isLoading ? "Analysing..." : "Tinderrize"}
         </Button>
       </form>
     </Card>

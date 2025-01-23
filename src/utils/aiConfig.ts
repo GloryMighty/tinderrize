@@ -10,10 +10,10 @@ You help users craft better messages based on their match's preferences and char
 
 IMPORTANT: Your response MUST strictly follow this format, using exactly these section headers:
 
-                                   Analysis
-A brief, 2-3 sentence analysis focusing on the message's key strengths and areas for improvement.
+Analysis
+A brief, 2-3 sentence analysis focusing on the message's key strengths and areas for improvement. Emphasize that you understand the match's preferences and the analysis is structured from it.
 
-                                   Improved Version
+Improved Version
 A single improved version of the message, tailored to the match's preferences.
 
 ENGAGEMENT METRICS

@@ -1,13 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { ChatInput } from "./ChatInput";
-import { ChatMessage as ChatMessageType } from "@/types/chat";
 import { ChatHistory } from "./ChatHistory";
 import { ChatHeader } from "./ChatHeader";
 import { generateAIResponse } from "@/utils/aiChat";
 import { usePreferences } from "@/hooks/usePreferences";
+import { ChatMessage } from "@/types/chat";
 
 interface ChatAssistantProps {
   onScoreUpdate: (score: number) => void;
@@ -17,7 +17,7 @@ interface ChatAssistantProps {
 export const ChatAssistant = ({ onScoreUpdate, onFirstMessage }: ChatAssistantProps) => {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [messages, setMessages] = useState<ChatMessageType[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const { preferences } = usePreferences();
   const { toast } = useToast();
   const [hasInteracted, setHasInteracted] = useState(false);
@@ -31,7 +31,7 @@ export const ChatAssistant = ({ onScoreUpdate, onFirstMessage }: ChatAssistantPr
       onFirstMessage?.();
     }
 
-    const userMessage: ChatMessageType = {
+    const userMessage: ChatMessage = {
       role: 'user',
       content: message,
       timestamp: new Date(),
@@ -59,7 +59,8 @@ export const ChatAssistant = ({ onScoreUpdate, onFirstMessage }: ChatAssistantPr
 
         const text = await generateAIResponse(message, preferences, messages, secrets);
 
-        const scoreMatch = text.match(/SCORE:\s*(\d+)/);
+        // Parse score with more specific regex
+        const scoreMatch = text.match(/RIZZ SCORE:\s*(\d{1,3})/);
         if (scoreMatch && scoreMatch[1]) {
           const score = parseInt(scoreMatch[1], 10);
           if (score >= 0 && score <= 100) {
@@ -67,7 +68,7 @@ export const ChatAssistant = ({ onScoreUpdate, onFirstMessage }: ChatAssistantPr
           }
         }
 
-        const aiMessage: ChatMessageType = {
+        const aiMessage: ChatMessage = {
           role: 'assistant',
           content: text,
           timestamp: new Date(),
@@ -76,6 +77,7 @@ export const ChatAssistant = ({ onScoreUpdate, onFirstMessage }: ChatAssistantPr
         return;
       }
 
+      // Production flow
       const { data: credits } = await supabase
         .from('user_credits')
         .select('tokens')
@@ -107,7 +109,8 @@ export const ChatAssistant = ({ onScoreUpdate, onFirstMessage }: ChatAssistantPr
         console.error("Error updating credits:", updateError);
       }
 
-      const scoreMatch = text.match(/SCORE:\s*(\d+)/);
+      // Parse score with more specific regex
+      const scoreMatch = text.match(/RIZZ SCORE:\s*(\d{1,3})/);
       if (scoreMatch && scoreMatch[1]) {
         const score = parseInt(scoreMatch[1], 10);
         if (score >= 0 && score <= 100) {
@@ -115,7 +118,7 @@ export const ChatAssistant = ({ onScoreUpdate, onFirstMessage }: ChatAssistantPr
         }
       }
 
-      const aiMessage: ChatMessageType = {
+      const aiMessage: ChatMessage = {
         role: 'assistant',
         content: text,
         timestamp: new Date(),

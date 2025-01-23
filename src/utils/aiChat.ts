@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { UserPreferences } from "@/types/preferences";
+import { GENERATION_CONFIG, SYSTEM_PROMPT } from "./aiConfig";
 
 export const generateAIResponse = async (
   message: string,
@@ -10,23 +11,38 @@ export const generateAIResponse = async (
   const genAI = new GoogleGenerativeAI(secrets.value);
   const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
+  const matchContext = preferences ? `
+MATCH CONTEXT
+Style Preference: ${preferences.rizz_style || 'Not specified'}
+Height: ${preferences.height ? preferences.height + 'cm' : 'Not specified'}
+Age: ${preferences.age ? preferences.age + ' years' : 'Not specified'}
+Body Type: ${preferences.body_type || 'Not specified'}
+Lifestyle: ${preferences.lifestyle || 'Not specified'}
+Relationship Goal: ${preferences.relationship_goal || 'Not specified'}
+
+Consider these match preferences carefully when analyzing and improving the message.` : '';
+
+  const historyContext = messages.length > 0 ? 
+    "\nPREVIOUS INTERACTIONS:\n" + messages.slice(-2).map(msg => 
+      `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.content}`
+    ).join('\n') : '';
+
+  const prompt = `${SYSTEM_PROMPT}
+
+${matchContext}
+${historyContext}
+
+MESSAGE TO ANALYZE: ${message}
+
+Provide your analysis and improvements following the exact format specified above.`;
+
   const chat = model.startChat({
     history: messages.map(msg => ({
       role: msg.role === 'user' ? 'user' : 'model',
       parts: [{ text: msg.content }]
-    }))
+    })),
+    generationConfig: GENERATION_CONFIG,
   });
-
-  const prompt = `You are RizzMaster, world-class guru of Dating, a Tinderizzer AI.
-User's preferences:
-- Rizz Style: ${preferences?.rizz_style || 'casual'}
-- Match Height: ${preferences?.height || 'Not specified'} cm
-- Match Age: ${preferences?.age || 'Not specified'} years
-- Match Body Type: ${preferences?.body_type || 'Not specified'}
-- Match Lifestyle: ${preferences?.lifestyle || 'Not specified'}
-- Relationship Goal: ${preferences?.relationship_goal || 'Not specified'}
-
-Analyze user message: "${message}". Improve user's message for dating purposes.`;
 
   const result = await chat.sendMessage(prompt);
   const response = await result.response;

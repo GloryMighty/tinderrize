@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Header } from "@/components/Header";
 import { RizzScore } from "@/components/RizzScore";
 import { ChatAssistant } from "@/components/chat/ChatAssistant";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
 const Index = () => {

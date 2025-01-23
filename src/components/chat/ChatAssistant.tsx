@@ -9,16 +9,27 @@ import { ChatHeader } from "./ChatHeader";
 import { generateAIResponse } from "@/utils/aiChat";
 import { usePreferences } from "@/hooks/usePreferences";
 
-export const ChatAssistant = ({ onScoreUpdate }: { onScoreUpdate: (score: number) => void }) => {
+interface ChatAssistantProps {
+  onScoreUpdate: (score: number) => void;
+  onFirstMessage?: () => void;
+}
+
+export const ChatAssistant = ({ onScoreUpdate, onFirstMessage }: ChatAssistantProps) => {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<ChatMessageType[]>([]);
   const { preferences } = usePreferences();
   const { toast } = useToast();
+  const [hasInteracted, setHasInteracted] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim()) return;
+
+    if (!hasInteracted) {
+      setHasInteracted(true);
+      onFirstMessage?.();
+    }
 
     const userMessage: ChatMessageType = {
       role: 'user',

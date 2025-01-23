@@ -27,7 +27,7 @@ export const RizzScore = ({ score = 75 }: { score?: number }) => {
   const status = getScoreStatus();
 
   return (
-    <Card className={`p-6 w-full transform hover:scale-[1.01] transition-all duration-300 bg-gradient-to-r ${status.bgGradient} backdrop-blur-lg border-primary/10`}>
+    <Card className={`p-4 w-full transform transition-all duration-300 bg-gradient-to-r ${status.bgGradient} backdrop-blur-lg border-primary/10`}>
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <h2 className="text-xl font-semibold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">

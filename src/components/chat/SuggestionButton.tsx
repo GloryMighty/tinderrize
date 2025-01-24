@@ -11,11 +11,11 @@ export const SuggestionButton = ({ suggestion }: SuggestionButtonProps) => {
     try {
       await navigator.clipboard.writeText(suggestion);
       toast.success("Copied to clipboard!", {
-        duration: 2000 // 2 seconds duration
+        duration: 1200 // 1.2 seconds duration
       });
     } catch (err) {
       toast.error("Failed to copy text", {
-        duration: 2000 // 2 seconds duration
+        duration: 1200 // 1.2 seconds duration
       });
     }
   };

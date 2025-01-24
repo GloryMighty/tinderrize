@@ -36,6 +36,7 @@ export const RizzApproaches = () => {
     toast({
       title: "Copied to clipboard!",
       description: "Now you can paste it in the chat below",
+      className: "fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 bg-white dark:bg-gray-800 shadow-lg rounded-lg",
     });
   };
 
@@ -64,7 +65,7 @@ export const RizzApproaches = () => {
               {lines.map((line, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between p-3 rounded-lg bg-background/80 backdrop-blur-sm shadow-sm border border-border hover:shadow-md transition-shadow"
+                  className="flex items-center justify-between p-3 rounded-lg bg-white dark:bg-background/80 backdrop-blur-sm shadow-sm border border-border hover:shadow-md transition-shadow"
                 >
                   <p className="text-sm text-foreground flex-1">{line}</p>
                   <Button

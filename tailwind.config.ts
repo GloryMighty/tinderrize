@@ -73,6 +73,10 @@ export default {
           "0%": { opacity: "0" },
           "100%": { opacity: "1" },
         },
+        "toast-slide-in": {
+          "0%": { transform: "translateX(-50%) translateY(100%)" },
+          "100%": { transform: "translateX(-50%) translateY(0)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -80,6 +84,7 @@ export default {
         float: "float 3s ease-in-out infinite",
         shake: "shake 0.5s ease-in-out infinite",
         "fade-in": "fade-in 0.5s ease-out",
+        "toast-slide-in": "toast-slide-in 0.4s ease-out",
       },
     },
   },

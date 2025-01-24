@@ -23,7 +23,7 @@ interface ChatHistory {
 
 // Define the generation config for the model
 const GENERATION_CONFIG = {
-  temperature: 0.7,
+  temperature: 0.5,
   topP: 0.8,
   topK: 40,
   maxOutputTokens: 1000,
@@ -34,13 +34,10 @@ You help users craft better messages based on their match's preferences and char
 
 IMPORTANT: Your response MUST strictly follow this format, using exactly these section headers:
 
-ANALYSIS
 A brief, 2-3 sentence analysis focusing on the message's key strengths and areas for improvement.
 
-IMPROVED VERSION
 A single improved version of the message, tailored to the match's preferences.
 
-ENGAGEMENT METRICS
 Humor: [Score 1-10]
 Confidence: [Score 1-10]
 Authenticity: [Score 1-10]

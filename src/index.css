@@ -12,13 +12,13 @@
     --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
-    --primary: 346 100% 66%;
+    --primary: 271 57% 58%;
     --primary-foreground: 355.7 100% 97.3%;
-    --secondary: 271 57% 58%;
+    --secondary: 277 75% 84%;
     --secondary-foreground: 240 5.9% 10%;
     --muted: 240 4.8% 95.9%;
     --muted-foreground: 240 3.8% 46.1%;
-    --accent: 168 71% 50%;
+    --accent: 297 50% 51%;
     --accent-foreground: 240 5.9% 10%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
@@ -56,6 +56,12 @@
 
   body {
     @apply bg-background text-foreground font-sans;
+  }
+
+  /* Add appealing background for chat and rizz score elements in light mode */
+  .chat-container, .rizz-score-container {
+    @apply bg-gradient-to-br from-[#E5DEFF] to-[#F5F0FF] dark:from-transparent dark:to-transparent;
+    @apply backdrop-blur-sm shadow-lg rounded-lg border border-[#D6BCFA]/20;
   }
 
   .toast-container {

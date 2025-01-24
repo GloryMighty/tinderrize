@@ -10,9 +10,13 @@ export const SuggestionButton = ({ suggestion }: SuggestionButtonProps) => {
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(suggestion);
-      toast.success("Copied to clipboard!");
+      toast.success("Copied to clipboard!", {
+        duration: 2000 // 2 seconds duration
+      });
     } catch (err) {
-      toast.error("Failed to copy text");
+      toast.error("Failed to copy text", {
+        duration: 2000 // 2 seconds duration
+      });
     }
   };
 

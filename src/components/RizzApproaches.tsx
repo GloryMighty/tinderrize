@@ -40,7 +40,7 @@ export const RizzApproaches = () => {
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto mb-6 animate-fade-in">
+    <div className="w-full max-w-3xl mx-auto mb-6 animate-fade-in relative z-30">
       <h2 className="text-2xl font-bold text-center mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
         Choose Your Rizz Style
       </h2>
@@ -64,13 +64,13 @@ export const RizzApproaches = () => {
               {lines.map((line, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between p-3 rounded-lg bg-background shadow-sm border border-border hover:shadow-md transition-shadow dark:bg-gray-800 dark:border-gray-700"
+                  className="flex items-center justify-between p-3 rounded-lg bg-background/80 backdrop-blur-sm shadow-sm border border-border hover:shadow-md transition-shadow"
                 >
                   <p className="text-sm text-foreground flex-1">{line}</p>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="ml-2 hover:bg-primary hover:text-white dark:hover:bg-primary dark:text-gray-300"
+                    className="ml-2 hover:bg-primary hover:text-white"
                     onClick={() => copyToClipboard(line)}
                   >
                     Copy

@@ -41,7 +41,7 @@ export const Header = () => {
   };
 
   return (
-    <header className="w-full py-4 px-6 bg-background border-b">
+    <header className="w-full py-4 px-6 bg-background border-b relative z-50">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         <div className="flex items-center gap-2">
           <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
@@ -56,7 +56,7 @@ export const Header = () => {
             <SelectTrigger className="w-[200px] bg-white/10 backdrop-blur-sm border-primary/20">
               <SelectValue placeholder="Select rizz style" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="z-[60]">
               <SelectItem value="casual">Casual 😊</SelectItem>
               <SelectItem value="sassy">Sassy 😏</SelectItem>
               <SelectItem value="toxic">Toxic Boy 😈</SelectItem>
@@ -86,7 +86,7 @@ export const Header = () => {
                 <User className="h-5 w-5" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" align="end">
+            <DropdownMenuContent className="w-56 z-[60]" align="end">
               {userEmail && (
                 <DropdownMenuItem className="text-sm text-muted-foreground cursor-default">
                   {userEmail}

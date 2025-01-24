@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { UserProfile } from "@/types/preferences";
 
 const Profile = () => {
   const [fullName, setFullName] = useState("");
@@ -41,10 +42,11 @@ const Profile = () => {
 
           if (error) throw error;
           if (data) {
-            setFullName(data.full_name || "");
-            setAge(data.age?.toString() || "");
-            setCountry(data.country || "");
-            setCity(data.city || "");
+            const profile = data as UserProfile;
+            setFullName(profile.full_name || "");
+            setAge(profile.age?.toString() || "");
+            setCountry(profile.country || "");
+            setCity(profile.city || "");
           }
         }
       } catch (error) {

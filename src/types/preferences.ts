@@ -6,3 +6,13 @@ export interface UserPreferences {
   lifestyle?: string;
   relationship_goal?: string;
 }
+
+export interface UserProfile {
+  id: string;
+  full_name: string | null;
+  age: number | null;
+  country: string | null;
+  city: string | null;
+  created_at: string;
+  updated_at: string;
+}

@@ -44,7 +44,10 @@ export const Header = () => {
     <header className="w-full py-4 px-6 bg-background border-b relative z-50">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          <h1 
+            className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent cursor-pointer"
+            onClick={() => navigate("/")}
+          >
             Tinderizzer
           </h1>
         </div>
@@ -92,6 +95,9 @@ export const Header = () => {
                   {userEmail}
                 </DropdownMenuItem>
               )}
+              <DropdownMenuItem onClick={() => navigate("/profile")}>
+                Profile
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={handleSignOut}>
                 Sign out
               </DropdownMenuItem>

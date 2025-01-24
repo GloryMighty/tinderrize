@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Index from "./pages/Index";
 import Upgrade from "./pages/Upgrade";
 import Landing from "./pages/Landing";
+import Profile from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
@@ -56,6 +57,14 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <Upgrade />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
               </ProtectedRoute>
             }
           />

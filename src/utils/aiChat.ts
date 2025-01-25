@@ -1,16 +1,15 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { UserPreferences } from "@/types/preferences";
 import { GENERATION_CONFIG, SYSTEM_PROMPT } from "./aiConfig";
-import { ChatMessage } from "@/types/chat";
 
 export const generateAIResponse = async (
   message: string,
   preferences: UserPreferences | null,
-  messages: ChatMessage[],
+  messages: { role: string; content: string }[],
   secrets: { value: string }
 ) => {
   const genAI = new GoogleGenerativeAI(secrets.value);
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
   const matchContext = preferences ? `
 MATCH CONTEXT
@@ -23,26 +22,29 @@ Relationship Goal: ${preferences.relationship_goal || 'Not specified'}
 
 Consider these match preferences carefully when analyzing and improving the message.` : '';
 
-  // Convert previous messages to Gemini's format
-  const history = messages.slice(-4).map(msg => ({
-    role: msg.role === 'user' ? 'user' : 'model',
-    parts: [{ text: msg.content }]
-  }));
+  const historyContext = messages.length > 0 ? 
+    "\nPREVIOUS INTERACTIONS:\n" + messages.slice(-2).map(msg => 
+      `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.content}`
+    ).join('\n') : '';
 
-  // Start chat with history
+  const prompt = `${SYSTEM_PROMPT}
+
+${matchContext}
+${historyContext}
+
+MESSAGE TO ANALYZE: ${message}
+
+Provide your analysis and improvements following the exact format specified above.`;
+
   const chat = model.startChat({
-    history: [
-      {
-        role: "model",
-        parts: [{ text: SYSTEM_PROMPT + "\n" + matchContext }]
-      },
-      ...history
-    ],
+    history: messages.map(msg => ({
+      role: msg.role === 'user' ? 'user' : 'model',
+      parts: [{ text: msg.content }]
+    })),
     generationConfig: GENERATION_CONFIG,
   });
 
-  // Send the new message
-  const result = await chat.sendMessage(message);
+  const result = await chat.sendMessage(prompt);
   const response = await result.response;
   return response.text();
 };

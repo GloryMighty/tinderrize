@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const approaches = {
   casual: [
@@ -31,14 +32,60 @@ export const RizzApproaches = () => {
   const { toast } = useToast();
   const [selectedApproach, setSelectedApproach] = useState("casual");
 
+  useEffect(() => {
+    const fetchUserPreferences = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data } = await supabase
+          .from('user_preferences')
+          .select('rizz_style')
+          .eq('id', user.id)
+          .maybeSingle();
+        
+        if (data?.rizz_style) {
+          setSelectedApproach(data.rizz_style);
+        }
+      }
+    };
+    fetchUserPreferences();
+  }, []);
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     toast({
       title: "Copied to clipboard!",
       description: "Now you can paste it in the chat below",
       className: "fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 bg-white dark:bg-gray-800 shadow-lg rounded-lg",
-      duration: 2000, // 2 seconds duration
+      duration: 2000,
     });
+  };
+
+  const handleApproachChange = async (value: string) => {
+    setSelectedApproach(value);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase
+          .from('user_preferences')
+          .upsert({
+            id: user.id,
+            rizz_style: value
+          }, { onConflict: 'id' });
+
+        toast({
+          title: "Style updated!",
+          description: `Your rizz style is now set to ${value}`,
+          duration: 2000,
+        });
+      }
+    } catch (error) {
+      console.error('Error updating rizz style:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update your rizz style",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -47,7 +94,7 @@ export const RizzApproaches = () => {
         Choose Your Rizz Style
       </h2>
       
-      <Tabs defaultValue="casual" className="w-full" onValueChange={setSelectedApproach}>
+      <Tabs value={selectedApproach} className="w-full" onValueChange={handleApproachChange}>
         <TabsList className="grid w-full grid-cols-3 mb-4">
           <TabsTrigger value="casual" className="text-sm">
             Casual 😊

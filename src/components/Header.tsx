@@ -71,7 +71,7 @@ export const Header = () => {
             onClick={() => setIsMatchModalOpen(true)}
             className="bg-white/10 backdrop-blur-sm border-primary/20"
           >
-            Edit Match Preferences
+            Match Preferences 
           </Button>
 
           <ThemeToggle />

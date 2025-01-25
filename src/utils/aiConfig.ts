@@ -28,4 +28,5 @@ Rules:
 2. Keep responses concise and actionable
 3. Base improvements on match preferences
 4. Use only periods and commas for punctuation
-5. Ensure the improved version maintains user's original intent`;
+5. Ensure the improved version maintains user's original intent
+6. Consider the conversation history when providing suggestions`;

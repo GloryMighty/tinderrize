@@ -9,7 +9,7 @@ export const generateAIResponse = async (
   secrets: { value: string }
 ) => {
   const genAI = new GoogleGenerativeAI(secrets.value);
-  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
   const rizzStyle = preferences?.rizz_style || 'casual';
   const rizzContext = `Current Rizz Style: ${rizzStyle}. Please analyze and improve the message keeping in mind that the user prefers a ${rizzStyle} approach to communication.`;

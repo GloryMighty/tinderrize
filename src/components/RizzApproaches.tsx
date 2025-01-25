@@ -56,7 +56,7 @@ export const RizzApproaches = () => {
       title: "Copied to clipboard!",
       description: "Now you can paste it in the chat below",
       className: "fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 bg-white dark:bg-gray-800 shadow-lg rounded-lg",
-      duration: 2000,
+      duration: 1000,
     });
   };
 
@@ -75,7 +75,7 @@ export const RizzApproaches = () => {
         toast({
           title: "Style updated!",
           description: `Your rizz style is now set to ${value}`,
-          duration: 2000,
+          duration: 1000,
         });
       }
     } catch (error) {

@@ -6,17 +6,17 @@
 
 @layer base {
   :root {
-    --background: 220 33% 98%;
+    --background: 252 33% 98%;
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
+    --popover: 252 33% 98%;
     --popover-foreground: 240 10% 3.9%;
-    --primary: 271 57% 58%;
+    --primary: 255 80% 75%;
     --primary-foreground: 355.7 100% 97.3%;
-    --secondary: 277 75% 84%;
+    --secondary: 267 75% 84%;
     --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
+    --muted: 252 33% 96%;
     --muted-foreground: 240 3.8% 46.1%;
     --accent: 297 50% 51%;
     --accent-foreground: 240 5.9% 10%;
@@ -58,30 +58,32 @@
     @apply bg-background text-foreground font-sans;
   }
 
-  /* Enhanced profile pop-up styling */
-  .profile-popup {
-    @apply bg-gradient-to-br from-[#E5DEFF] to-[#F5F0FF] dark:from-gray-800/90 dark:to-gray-900/90;
-    @apply backdrop-blur-lg border border-[#D6BCFA]/30 dark:border-gray-700/30;
-    @apply shadow-xl rounded-xl;
-    @apply transition-all duration-300;
+  /* Enhanced dropdown styling */
+  .select-trigger {
+    @apply bg-white dark:bg-gray-800 border-2 border-primary/20 hover:border-primary/40 
+           shadow-sm hover:shadow-md transition-all duration-300;
   }
 
-  /* Add appealing background for chat and rizz score elements in light mode */
-  .chat-container, .rizz-score-container {
-    @apply bg-gradient-to-br from-[#E5DEFF] to-[#F5F0FF] dark:from-transparent dark:to-transparent;
-    @apply backdrop-blur-sm shadow-lg rounded-lg border border-[#D6BCFA]/20;
+  /* Profile dropdown enhancement */
+  .dropdown-content {
+    @apply bg-white dark:bg-gray-800 border-2 border-primary/20
+           shadow-lg backdrop-blur-sm rounded-lg
+           z-50;
   }
 
+  /* Chat container styling */
+  .chat-container {
+    @apply bg-gradient-to-br from-[#E5DEFF] to-[#F5F0FF] dark:from-gray-800/90 dark:to-gray-900/90
+           backdrop-blur-sm border border-[#D6BCFA]/30 dark:border-gray-700/30
+           shadow-xl rounded-xl;
+  }
+
+  /* Toast styling */
   .toast-container {
-    @apply fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 flex flex-col gap-2;
+    @apply fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50;
   }
 
   .toast-message {
-    @apply bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 animate-toast-slide-in;
-  }
-
-  /* Enhanced hover effects for interactive elements */
-  .interactive-hover {
-    @apply hover:shadow-md hover:scale-[1.02] transition-all duration-300;
+    @apply bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4;
   }
 }

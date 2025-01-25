@@ -56,10 +56,10 @@ export const Header = () => {
             setRizzStyle(value);
             setIsRizzStyleModalOpen(true);
           }}>
-            <SelectTrigger className="w-[200px] bg-white/10 backdrop-blur-sm border-primary/20">
+            <SelectTrigger className="w-[200px] select-trigger">
               <SelectValue placeholder="Select rizz style" />
             </SelectTrigger>
-            <SelectContent className="z-[60]">
+            <SelectContent className="dropdown-content">
               <SelectItem value="casual">Casual 😊</SelectItem>
               <SelectItem value="sassy">Sassy 😏</SelectItem>
               <SelectItem value="toxic">Toxic Boy 😈</SelectItem>
@@ -69,7 +69,7 @@ export const Header = () => {
           <Button
             variant="outline"
             onClick={() => setIsMatchModalOpen(true)}
-            className="bg-white/10 backdrop-blur-sm border-primary/20"
+            className="select-trigger"
           >
             Match Preferences 
           </Button>
@@ -89,7 +89,7 @@ export const Header = () => {
                 <User className="h-5 w-5" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56 z-[60]" align="end">
+            <DropdownMenuContent className="dropdown-content w-56" align="end">
               {userEmail && (
                 <DropdownMenuItem className="text-sm text-muted-foreground cursor-default">
                   {userEmail}

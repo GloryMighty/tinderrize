@@ -34,7 +34,7 @@ export const ChatInput = ({ message, setMessage, onSubmit, isLoading }: ChatInpu
         <Button
           type="submit"
           size="icon"
-          className="absolute bottom-3 right-3 bg-primary/100 hover:bg-primary/40 
+          className="absolute bottom-1 right-1 bg-primary/100 hover:bg-primary/40 
                      dark:bg-primary/50 dark:hover:bg-primary/50
                      transition-all duration-300"
           disabled={isLoading}

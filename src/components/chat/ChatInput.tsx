@@ -10,6 +10,15 @@ interface ChatInputProps {
 }
 
 export const ChatInput = ({ message, setMessage, onSubmit, isLoading }: ChatInputProps) => {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (message.trim()) {
+        onSubmit(e as unknown as React.FormEvent);
+      }
+    }
+  };
+
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div className="relative">
@@ -17,12 +26,17 @@ export const ChatInput = ({ message, setMessage, onSubmit, isLoading }: ChatInpu
           placeholder="Type your message..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          className="min-h-[120px] bg-white/10 border-primary/20 focus:border-primary/40 placeholder:text-gray-400 pr-12 resize-none"
+          onKeyDown={handleKeyPress}
+          className="min-h-[120px] bg-white/10 border-primary/20 focus:border-primary/40 placeholder:text-gray-400 pr-12 resize-none 
+                    dark:bg-gray-800/50 dark:border-gray-700 dark:focus:border-primary/40
+                    backdrop-blur-sm transition-all duration-300"
         />
         <Button
           type="submit"
           size="icon"
-          className="absolute bottom-4 right-4 bg-primary/20 hover:bg-primary/30"
+          className="absolute bottom-4 right-4 bg-primary/20 hover:bg-primary/30 
+                     dark:bg-primary/30 dark:hover:bg-primary/40
+                     transition-all duration-300"
           disabled={isLoading}
         >
           <Send className="h-4 w-4" />

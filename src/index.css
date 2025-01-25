@@ -58,6 +58,14 @@
     @apply bg-background text-foreground font-sans;
   }
 
+  /* Enhanced profile pop-up styling */
+  .profile-popup {
+    @apply bg-gradient-to-br from-[#E5DEFF] to-[#F5F0FF] dark:from-gray-800/90 dark:to-gray-900/90;
+    @apply backdrop-blur-lg border border-[#D6BCFA]/30 dark:border-gray-700/30;
+    @apply shadow-xl rounded-xl;
+    @apply transition-all duration-300;
+  }
+
   /* Add appealing background for chat and rizz score elements in light mode */
   .chat-container, .rizz-score-container {
     @apply bg-gradient-to-br from-[#E5DEFF] to-[#F5F0FF] dark:from-transparent dark:to-transparent;
@@ -70,5 +78,10 @@
 
   .toast-message {
     @apply bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 animate-toast-slide-in;
+  }
+
+  /* Enhanced hover effects for interactive elements */
+  .interactive-hover {
+    @apply hover:shadow-md hover:scale-[1.02] transition-all duration-300;
   }
 }

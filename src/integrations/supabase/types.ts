@@ -68,6 +68,7 @@ export type Database = {
           height: number | null
           id: string
           lifestyle: string | null
+          match_name: string | null
           relationship_goal: string | null
           rizz_style: string | null
           updated_at: string
@@ -79,6 +80,7 @@ export type Database = {
           height?: number | null
           id: string
           lifestyle?: string | null
+          match_name?: string | null
           relationship_goal?: string | null
           rizz_style?: string | null
           updated_at?: string
@@ -90,6 +92,7 @@ export type Database = {
           height?: number | null
           id?: string
           lifestyle?: string | null
+          match_name?: string | null
           relationship_goal?: string | null
           rizz_style?: string | null
           updated_at?: string

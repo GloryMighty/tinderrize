@@ -71,7 +71,7 @@ export const Header = () => {
             onClick={() => setIsMatchModalOpen(true)}
             className="select-trigger"
           >
-            Match Preferences 
+            Your Match
           </Button>
 
           <ThemeToggle />

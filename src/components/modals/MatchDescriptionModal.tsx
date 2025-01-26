@@ -2,6 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -40,6 +41,7 @@ export const MatchDescriptionModal = ({ open, onOpenChange }: MatchDescriptionMo
   const [bodyType, setBodyType] = useState("");
   const [lifestyle, setLifestyle] = useState("");
   const [relationshipGoal, setRelationshipGoal] = useState("");
+  const [matchName, setMatchName] = useState("");
   const { toast } = useToast();
 
   const handleSave = async () => {
@@ -56,6 +58,7 @@ export const MatchDescriptionModal = ({ open, onOpenChange }: MatchDescriptionMo
           body_type: bodyType,
           lifestyle,
           relationship_goal: relationshipGoal,
+          match_name: matchName,
         }, { onConflict: 'id' });
 
       if (error) throw error;
@@ -84,6 +87,16 @@ export const MatchDescriptionModal = ({ open, onOpenChange }: MatchDescriptionMo
         </DialogHeader>
         
         <div className="grid gap-6 py-4">
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Match Name</label>
+            <Input
+              value={matchName}
+              onChange={(e) => setMatchName(e.target.value)}
+              placeholder="Enter your match's name"
+              className="bg-white/10 backdrop-blur-sm border-primary/20"
+            />
+          </div>
+
           <div className="space-y-2">
             <label className="text-sm font-medium">Height: {height}cm</label>
             <Slider

@@ -7,7 +7,6 @@ export const UserCredits = () => {
   const [credits, setCredits] = useState<number | null>(null);
 
   useEffect(() => {
-    // In development mode, show infinite tokens
     if (import.meta.env.DEV) {
       setCredits(Infinity);
       return;
@@ -55,9 +54,9 @@ export const UserCredits = () => {
   }, []);
 
   return (
-    <Card className="p-4 flex items-center gap-2 bg-white/10 backdrop-blur-sm border-primary/10 shadow-lg hover:shadow-xl transition-all duration-300">
-      <Coins className="w-5 h-5 text-primary animate-pulse" />
-      <span className="font-medium bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+    <Card className="p-2 flex items-center gap-2 bg-white/10 backdrop-blur-sm border-primary/10 shadow-lg">
+      <Coins className="w-4 h-4 text-primary animate-pulse" />
+      <span className="font-medium bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent text-sm">
         {credits === Infinity ? '∞' : credits !== null ? credits : '...'} tokens
       </span>
     </Card>

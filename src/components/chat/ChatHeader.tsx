@@ -30,7 +30,7 @@ export const ChatHeader = ({ suggestion }: ChatHeaderProps) => {
 
   return (
     <div className="flex flex-col gap-4 mb-6">
-      <div className="flex justify-end items-center">
+      <div className="absolute top-4 right-4 z-10">
         {!import.meta.env.DEV && <UserCredits />}
       </div>
       

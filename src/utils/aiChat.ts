@@ -24,7 +24,7 @@ Body Type: ${preferences.body_type || 'Not specified'}
 Lifestyle: ${preferences.lifestyle || 'Not specified'}
 Relationship Goal: ${preferences.relationship_goal || 'Not specified'}
 
-Consider these match preferences carefully when analyzing and improving the message.` : '';
+Consider these match description carefully when analyzing and improving the message.` : '';
 
   const historyContext = messages.length > 0 ? 
     "\nPREVIOUS INTERACTIONS:\n" + messages.slice(-2).map(msg => 

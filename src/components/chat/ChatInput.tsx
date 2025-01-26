@@ -35,7 +35,7 @@ export const ChatInput = ({ message, setMessage, onSubmit, isLoading }: ChatInpu
           type="submit"
           size="icon"
           className="h-auto rounded-l-none bg-primary/100 hover:bg-primary/40 
-                     dark:bg-primary/50 dark:hover:bg-primary/50
+                     dark:bg-primary/35 dark:hover:bg-primary/3
                      transition-all duration-300"
           disabled={isLoading}
         >

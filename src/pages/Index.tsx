@@ -2,19 +2,21 @@ import { useState } from "react";
 import { Header } from "@/components/Header";
 import { RizzScore } from "@/components/RizzScore";
 import { ChatAssistant } from "@/components/chat/ChatAssistant";
-import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp } from "lucide-react";
 
 const Index = () => {
-  const [rizzScore, setRizzScore] = useState(75);
+  const [rizzScore, setRizzScore] = useState<number | null>(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
 
   const handleFirstMessage = () => {
     if (!hasInteracted) {
-      setIsCollapsed(true);
       setHasInteracted(true);
     }
+  };
+
+  const handleScoreUpdate = (score: number) => {
+    setRizzScore(score);
+    setIsCollapsed(false); // Make sure the score is visible when updated
   };
 
   return (
@@ -22,16 +24,16 @@ const Index = () => {
       <Header />
       <div className="container py-6">
         <div className={`transition-all duration-300 ease-in-out ${
-          isCollapsed ? "opacity-0 h-0" : "opacity-100"
+          !rizzScore ? "opacity-0 h-0" : "opacity-100"
         }`}>
-          <RizzScore score={rizzScore} />
+          <RizzScore score={rizzScore || 0} />
         </div>
       </div>
       <main className={`container py-4 space-y-4 px-4 sm:px-6 transition-all duration-300 ${
         isCollapsed ? "h-[calc(100vh-4rem)]" : "h-[calc(100vh-16rem)]"
       }`}>
         <div className="w-full h-full">
-          <ChatAssistant onScoreUpdate={setRizzScore} onFirstMessage={handleFirstMessage} />
+          <ChatAssistant onScoreUpdate={handleScoreUpdate} onFirstMessage={handleFirstMessage} />
         </div>
       </main>
     </div>

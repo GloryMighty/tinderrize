@@ -30,10 +30,7 @@ export const ChatHeader = ({ suggestion }: ChatHeaderProps) => {
 
   return (
     <div className="flex flex-col gap-4 mb-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-semibold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-          AI Chat Assistant
-        </h2>
+      <div className="flex justify-end items-center">
         {!import.meta.env.DEV && <UserCredits />}
       </div>
       

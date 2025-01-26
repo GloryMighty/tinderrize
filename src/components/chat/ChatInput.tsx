@@ -21,20 +21,20 @@ export const ChatInput = ({ message, setMessage, onSubmit, isLoading }: ChatInpu
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">
-      <div className="relative">
+      <div className="relative flex">
         <Textarea
           placeholder="Type your message..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyPress}
-          className="min-h-[40px] bg-white/10 border-primary/20 focus:border-primary/40 placeholder:text-gray-400 pr-12 resize-none 
+          className="min-h-[40px] bg-white/10 border-primary/20 focus:border-primary/40 placeholder:text-gray-400 resize-none 
                     dark:bg-gray-400/50 dark:border-gray-700 dark:focus:border-primary/40
-                    backdrop-blur-sm transition-all duration-300"
+                    backdrop-blur-sm transition-all duration-300 rounded-r-none"
         />
         <Button
           type="submit"
           size="icon"
-          className="absolute bottom-1  right-1 bg-primary/100 hover:bg-primary/40 
+          className="h-auto rounded-l-none bg-primary/100 hover:bg-primary/40 
                      dark:bg-primary/50 dark:hover:bg-primary/50
                      transition-all duration-300"
           disabled={isLoading}

@@ -41,7 +41,7 @@ export const Header = () => {
   };
 
   return (
-    <header className="w-full py-4 px-6 bg-background border-b relative z-50">
+    <header className="w-full py-4 px-6 bg-gradient-to-b from-[#1A1F2C] to-[#2C2F3E] border-b border-primary/10 relative z-50">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         <div className="flex items-center gap-2">
           <h1 

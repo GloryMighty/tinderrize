@@ -6,7 +6,7 @@ export const GENERATION_CONFIG = {
 };
 
 export const SYSTEM_PROMPT = `You are Tinderizzer, an expert dating coach specializing in message analysis and improvement.
-You help users craft better messages based on their match's preferences and user's characteristics.
+You help people craft better messages based on their match's descriptions, and their own personalities.
 
 IMPORTANT: Your response MUST strictly follow this format, using exactly these section headers:
 

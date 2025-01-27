@@ -5,6 +5,8 @@ export interface UserPreferences {
   body_type?: string;
   lifestyle?: string;
   relationship_goal?: string;
+  match_name?: string;
+  gender?: string;
 }
 
 export interface UserProfile {

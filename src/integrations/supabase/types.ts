@@ -65,6 +65,7 @@ export type Database = {
           age: number | null
           body_type: string | null
           created_at: string
+          gender: string | null
           height: number | null
           id: string
           lifestyle: string | null
@@ -77,6 +78,7 @@ export type Database = {
           age?: number | null
           body_type?: string | null
           created_at?: string
+          gender?: string | null
           height?: number | null
           id: string
           lifestyle?: string | null
@@ -89,6 +91,7 @@ export type Database = {
           age?: number | null
           body_type?: string | null
           created_at?: string
+          gender?: string | null
           height?: number | null
           id?: string
           lifestyle?: string | null

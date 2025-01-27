@@ -13,6 +13,7 @@ interface MatchDescriptionModalProps {
 }
 
 const bodyTypes = ["skinny", "bbl", "thick", "slim thick", "snack"];
+const genders = ["male", "female", "non-binary", "other"];
 
 const lifestyles = [
   { value: "humor", label: "Humor & Internet 🤣" },
@@ -42,6 +43,7 @@ export const MatchDescriptionModal = ({ open, onOpenChange }: MatchDescriptionMo
   const [lifestyle, setLifestyle] = useState("");
   const [relationshipGoal, setRelationshipGoal] = useState("");
   const [matchName, setMatchName] = useState("");
+  const [gender, setGender] = useState("");
   const { toast } = useToast();
 
   const handleSave = async () => {
@@ -59,6 +61,7 @@ export const MatchDescriptionModal = ({ open, onOpenChange }: MatchDescriptionMo
           lifestyle,
           relationship_goal: relationshipGoal,
           match_name: matchName,
+          gender,
         }, { onConflict: 'id' });
 
       if (error) throw error;
@@ -95,6 +98,26 @@ export const MatchDescriptionModal = ({ open, onOpenChange }: MatchDescriptionMo
               placeholder="Enter your match's name"
               className="bg-white/10 backdrop-blur-sm border-primary/20"
             />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Gender</label>
+            <Select value={gender} onValueChange={setGender}>
+              <SelectTrigger className="w-full bg-white/10 backdrop-blur-sm border-primary/20 hover:bg-white/20 transition-all duration-300">
+                <SelectValue placeholder="Select gender" />
+              </SelectTrigger>
+              <SelectContent className="bg-background/95 backdrop-blur-sm border-primary/20">
+                {genders.map((g) => (
+                  <SelectItem 
+                    key={g} 
+                    value={g}
+                    className="hover:bg-primary/10 transition-all duration-300"
+                  >
+                    {g.charAt(0).toUpperCase() + g.slice(1)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">

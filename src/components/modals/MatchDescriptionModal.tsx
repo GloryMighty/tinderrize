@@ -82,14 +82,14 @@ export const MatchDescriptionModal = ({ open, onOpenChange }: MatchDescriptionMo
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl bg-background/95 backdrop-blur-sm border-primary/10">
+      <DialogContent className="max-w-2xl max-h-[80vh] bg-background/95 backdrop-blur-sm border-primary/10 overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
             Describe Your Match
           </DialogTitle>
         </DialogHeader>
         
-        <div className="grid gap-6 py-4">
+        <div className="grid gap-4 py-4">
           <div className="space-y-2">
             <label className="text-sm font-medium">Match Name</label>
             <Input

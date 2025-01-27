@@ -27,16 +27,17 @@ export const ChatInput = ({ message, setMessage, onSubmit, isLoading }: ChatInpu
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyPress}
-          className="min-h-[40px] bg-white/10 border-primary/20 focus:border-primary/40 placeholder:text-gray-400 resize-none 
+          className="min-h-[40px] bg-white/10 border-primary/20 focus:border-primary/40 
+                    placeholder:text-gray-400 resize-none 
                     dark:bg-gray-400/50 dark:border-gray-700 dark:focus:border-primary/40
                     backdrop-blur-sm transition-all duration-300 rounded-r-none pr-24"
         />
         <Button
           type="submit"
           size="icon"
-          className="h-auto w-24 rounded-l-none bg-gradient-to-r from-primary via-secondary to-accent hover:opacity-90
-                     dark:from-primary/80 dark:via-secondary/80 dark:to-accent/80 dark:hover:opacity-75
-                     transition-all duration-300"
+          className="h-auto w-24 rounded-l-none bg-gradient-to-r from-primary via-secondary 
+                   to-accent hover:opacity-90 dark:from-primary/80 dark:via-secondary/80 
+                   dark:to-accent/80 dark:hover:opacity-75 transition-all duration-300"
           disabled={isLoading}
         >
           <Send className="h-4 w-4" />

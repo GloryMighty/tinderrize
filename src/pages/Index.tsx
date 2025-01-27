@@ -7,6 +7,7 @@ const Index = () => {
   const [rizzScore, setRizzScore] = useState<number | null>(null);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
 
   const handleFirstMessage = () => {
     if (!hasInteracted) {
@@ -16,7 +17,12 @@ const Index = () => {
 
   const handleScoreUpdate = (score: number) => {
     setRizzScore(score);
-    setIsCollapsed(false); // Make sure the score is visible when updated
+    setIsCollapsed(false);
+    setIsTyping(false);
+  };
+
+  const handleTypingStateChange = (typing: boolean) => {
+    setIsTyping(typing);
   };
 
   return (
@@ -29,11 +35,19 @@ const Index = () => {
           <RizzScore score={rizzScore || 0} />
         </div>
       </div>
-      <main className={`container py-4 space-y-4 px-4 sm:px-6 transition-all duration-300 ${
-        isCollapsed ? "h-[calc(100vh-4rem)]" : "h-[calc(100vh-16rem)]"
+      <main className={`container py-4 space-y-4 px-4 sm:px-6 transition-all duration-500 ${
+        isTyping 
+          ? "h-[calc(100vh-8rem)]" 
+          : rizzScore 
+            ? "h-[calc(100vh-16rem)]" 
+            : "h-[calc(100vh-8rem)]"
       }`}>
         <div className="w-full h-full">
-          <ChatAssistant onScoreUpdate={handleScoreUpdate} onFirstMessage={handleFirstMessage} />
+          <ChatAssistant 
+            onScoreUpdate={handleScoreUpdate} 
+            onFirstMessage={handleFirstMessage}
+            onTypingStateChange={handleTypingStateChange}
+          />
         </div>
       </main>
     </div>

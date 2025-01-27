@@ -12,15 +12,24 @@ import { ChatMessage } from "@/types/chat";
 interface ChatAssistantProps {
   onScoreUpdate: (score: number) => void;
   onFirstMessage?: () => void;
+  onTypingStateChange?: (typing: boolean) => void;
 }
 
-export const ChatAssistant = ({ onScoreUpdate, onFirstMessage }: ChatAssistantProps) => {
+export const ChatAssistant = ({ 
+  onScoreUpdate, 
+  onFirstMessage,
+  onTypingStateChange 
+}: ChatAssistantProps) => {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const { preferences } = usePreferences();
   const { toast } = useToast();
   const [hasInteracted, setHasInteracted] = useState(false);
+
+  useEffect(() => {
+    onTypingStateChange?.(message.length > 0);
+  }, [message, onTypingStateChange]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -138,7 +147,9 @@ export const ChatAssistant = ({ onScoreUpdate, onFirstMessage }: ChatAssistantPr
   };
 
   return (
-    <Card className="h-full p-6 bg-gradient-to-b from-white/5 to-primary/5 backdrop-blur-sm border-primary/10 shadow-xl overflow-hidden flex flex-col">
+    <Card className={`h-full p-6 bg-gradient-to-b from-white/5 to-primary/5 backdrop-blur-sm 
+                     border-primary/10 shadow-xl overflow-hidden flex flex-col
+                     transition-all duration-500 ease-in-out`}>
       <ChatHeader />
       <ChatHistory messages={messages} />
       <ChatInput

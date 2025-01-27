@@ -17,6 +17,8 @@ export const generateAIResponse = async (
   const matchContext = preferences ? `
 MATCH CONTEXT
 ${rizzContext}
+Name: ${preferences.match_name || 'Not specified' } 
+Gender: ${preferences.gender || 'Not specified' } 
 Style Preference: ${preferences.rizz_style || 'Not specified'}
 Height: ${preferences.height ? preferences.height + 'cm' : 'Not specified'}
 Age: ${preferences.age ? preferences.age + ' years' : 'Not specified'}

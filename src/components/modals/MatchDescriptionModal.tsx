@@ -12,8 +12,20 @@ interface MatchDescriptionModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const bodyTypes = ["skinny", "bbl", "thick", "slim thick", "snack"];
-const genders = ["male", "female", "non-binary", "other"];
+const bodyTypes = [
+  "skinny 💃", 
+  "bbl 🍑", 
+  "thick 🍒", 
+  "slim thick 👙", 
+  "snack 🍬"
+];
+
+const genders = [
+  "male ♂️", 
+  "female ♀️", 
+  "non-binary ⚧", 
+  "other ❓"
+];
 
 const lifestyles = [
   { value: "humor", label: "Humor & Internet 🤣" },

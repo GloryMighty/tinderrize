@@ -16,12 +16,12 @@ A brief, 2-3 sentence analysis focusing on the message's key strengths and areas
 Improved:
 A single improved version of the message, tailored to the match's preferences. 
 
-Humor: [Score 1-10]
-Confidence: [Score 1-10]
-Authenticity: [Score 1-10]
-Match Alignment: [Score 1-10] (how well it aligns with match preferences)
+Humor: 1-10
+Confidence: 1-10
+Authenticity: 1-10
+Match Alignment: 1-10
 
-RIZZ SCORE: [0-100]
+RIZZ SCORE: 0-100
 
 Rules:
 1. Use ONLY the section headers above

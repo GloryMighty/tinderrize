@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -247,17 +248,17 @@ Provide your analysis and improvements following the exact format specified abov
   };
 
   return (
-    <Card className="p-6 w-full max-w-2xl mx-auto bg-white/5 backdrop-blur-sm border-primary/10 shadow-xl">
-      <div className="flex justify-between items-center mb-6">
+    <Card className="p-4 w-full max-w-5xl mx-auto bg-gray-900/40 backdrop-blur-md border border-primary/20 shadow-xl rounded-xl">
+      <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-semibold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Tinderrizer</h2>
         {!import.meta.env.DEV && <UserCredits />}
       </div>
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <Textarea
           placeholder="Type your rizz..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          className="min-h-[120px] bg-white/10 border-primary/20 focus:border-primary/40 placeholder:text-gray-400"
+          className="min-h-[120px] bg-gray-800/30 border-primary/20 focus:border-primary/40 placeholder:text-gray-400 text-white"
         />
         <Button
           type="submit"

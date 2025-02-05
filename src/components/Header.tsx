@@ -1,3 +1,4 @@
+
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -48,15 +49,22 @@ export const Header = ({ rizzScore }: HeaderProps) => {
   return (
     <header className="w-full py-4 px-6 bg-gradient-to-b from-[#1A1F2C] to-[#2C2F3E] border-b border-primary/10 relative z-50">
       <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-8">
             <h1 
               className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent cursor-pointer"
               onClick={() => navigate("/")}
             >
               Tinderizzer
             </h1>
+            
+            {rizzScore !== null && (
+              <div className="w-[300px]">
+                <RizzScore score={rizzScore} />
+              </div>
+            )}
           </div>
+
           <div className="flex items-center gap-4">
             <Select value={rizzStyle} onValueChange={(value) => {
               setRizzStyle(value);
@@ -111,12 +119,6 @@ export const Header = ({ rizzScore }: HeaderProps) => {
             </DropdownMenu>
           </div>
         </div>
-
-        {rizzScore !== null && (
-          <div className="transition-all duration-300 ease-in-out">
-            <RizzScore score={rizzScore} />
-          </div>
-        )}
       </div>
 
       <RizzStyleModal

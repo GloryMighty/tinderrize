@@ -1,5 +1,5 @@
 export const GENERATION_CONFIG = {
-  temperature: 0.3,
+  temperature: 0.1,
   topP: 0.8,
   topK: 40,
   maxOutputTokens: 1000,

@@ -17,7 +17,7 @@ import {
 import { User } from "lucide-react";
 
 interface HeaderProps {
-  rizzScore?: number | null;
+  rizzScore: number;
 }
 
 export const Header = ({ rizzScore }: HeaderProps) => {
@@ -58,11 +58,9 @@ export const Header = ({ rizzScore }: HeaderProps) => {
               Tinderizzer
             </h1>
             
-            {rizzScore !== null && (
-              <div className="w-[300px]">
-                <RizzScore score={rizzScore} />
-              </div>
-            )}
+            <div className="w-[200px]">
+              <RizzScore score={rizzScore} />
+            </div>
           </div>
 
           <div className="flex items-center gap-4">

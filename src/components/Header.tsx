@@ -1,28 +1,19 @@
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RizzStyleModal } from "./modals/RizzStyleModal";
 import { MatchDescriptionModal } from "./modals/MatchDescriptionModal";
 import { RizzScore } from "./RizzScore";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { User } from "lucide-react";
+import { HeaderActions } from "./header/HeaderActions";
+import { HeaderStyleSelector } from "./header/HeaderStyleSelector";
 
 interface HeaderProps {
   rizzScore: number;
 }
 
 export const Header = ({ rizzScore }: HeaderProps) => {
-  const navigate = useNavigate();
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [rizzStyle, setRizzStyle] = useState("casual");
   const [isRizzStyleModalOpen, setIsRizzStyleModalOpen] = useState(false);
@@ -43,20 +34,12 @@ export const Header = ({ rizzScore }: HeaderProps) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    navigate("/landing");
-  };
-
   return (
     <header className="w-full py-4 px-6 bg-gradient-to-b from-[#1A1F2C] to-[#2C2F3E] border-b border-primary/10 relative z-50">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4 md:gap-8">
-            <h1 
-              className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent cursor-pointer"
-              onClick={() => navigate("/")}
-            >
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
               Tinderizzer
             </h1>
             
@@ -75,19 +58,13 @@ export const Header = ({ rizzScore }: HeaderProps) => {
           </div>
 
           <div className="hidden md:flex items-center gap-4">
-            <Select value={rizzStyle} onValueChange={(value) => {
-              setRizzStyle(value);
-              setIsRizzStyleModalOpen(true);
-            }}>
-              <SelectTrigger className="w-[200px] select-trigger">
-                <SelectValue placeholder="Select rizz style" />
-              </SelectTrigger>
-              <SelectContent className="dropdown-content">
-                <SelectItem value="casual">Casual 😊</SelectItem>
-                <SelectItem value="sassy">Sassy 😏</SelectItem>
-                <SelectItem value="toxic">Toxic Boy 😈</SelectItem>
-              </SelectContent>
-            </Select>
+            <HeaderStyleSelector 
+              rizzStyle={rizzStyle} 
+              onStyleChange={(value) => {
+                setRizzStyle(value);
+                setIsRizzStyleModalOpen(true);
+              }}
+            />
 
             <Button
               variant="outline"
@@ -97,35 +74,7 @@ export const Header = ({ rizzScore }: HeaderProps) => {
               Your Match
             </Button>
 
-            <ThemeToggle />
-
-            <Button
-              className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white"
-              onClick={() => navigate("/upgrade")}
-            >
-              Upgrade
-            </Button>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                  <User className="h-5 w-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="dropdown-content w-56" align="end">
-                {userEmail && (
-                  <DropdownMenuItem className="text-sm text-muted-foreground cursor-default">
-                    {userEmail}
-                  </DropdownMenuItem>
-                )}
-                <DropdownMenuItem onClick={() => navigate("/profile")}>
-                  Profile
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleSignOut}>
-                  Sign out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <HeaderActions userEmail={userEmail} />
           </div>
         </div>
       </div>

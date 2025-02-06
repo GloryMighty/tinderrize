@@ -1,56 +1,69 @@
+import { ChatHistory, UserPreferences } from "@/types/chat";
+import { supabase } from "@/integrations/supabase/client";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { UserPreferences } from "@/types/preferences";
-import { GENERATION_CONFIG, SYSTEM_PROMPT } from "./aiConfig";
 
-export const generateAIResponse = async (
+const GENERATION_CONFIG = {
+  temperature: 0.5,
+  topP: 0.8,
+  topK: 40,
+  maxOutputTokens: 1000,
+};
+
+export const handleAIResponse = async (
   message: string,
   preferences: UserPreferences | null,
-  messages: { role: string; content: string }[],
-  secrets: { value: string }
+  messages: ChatHistory[],
+  onScoreUpdate: (score: number) => void,
+  isDevelopment: boolean = false
 ) => {
-  const genAI = new GoogleGenerativeAI(secrets.value);
-  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    throw new Error("Please sign in to use this feature.");
+  }
 
-  const rizzStyle = preferences?.rizz_style || 'casual';
-  const rizzContext = `Current Rizz Style: ${rizzStyle}. Please analyze and improve the rizz message keeping in mind that the person prefers a ${rizzStyle} approach to communication.`;
+  if (isDevelopment) {
+    const { data: { secrets } } = await supabase.functions.invoke('get-secret', {
+      body: { name: 'GEMINI_API_KEY' }
+    });
+    
+    const text = await generateAIResponse(message, preferences, messages, secrets);
+    updateRizzScore(text, onScoreUpdate);
+    return text;
+  }
 
-  const matchContext = preferences ? `
-MATCH CONTEXT
-${rizzContext}
-Name: ${preferences.match_name || 'Not specified' } 
-Gender: ${preferences.gender || 'Not specified' } 
-Style Preference: ${preferences.rizz_style || 'Not specified'}
-Height: ${preferences.height ? preferences.height + 'cm' : 'Not specified'}
-Age: ${preferences.age ? preferences.age + ' years' : 'Not specified'}
-Body Type: ${preferences.body_type || 'Not specified'}
-Lifestyle: ${preferences.lifestyle || 'Not specified'}
-Relationship Goal: ${preferences.relationship_goal || 'Not specified'}
+  // Production flow
+  const { data: credits } = await supabase
+    .from('user_credits')
+    .select('tokens')
+    .eq('id', user.id)
+    .maybeSingle();
 
-Consider these match description carefully when analyzing and improving the message.` : '';
+  if (!credits || credits.tokens < 1) {
+    throw new Error("Insufficient tokens. Please upgrade to continue.");
+  }
 
-  const historyContext = messages.length > 0 ? 
-    "\nPREVIOUS INTERACTIONS:\n" + messages.slice(-2).map(msg => 
-      `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.content}`
-    ).join('\n') : '';
-
-  const prompt = `${SYSTEM_PROMPT}
-
-${matchContext}
-${historyContext}
-
-MESSAGE TO ANALYZE: ${message}
-
-Provide your analysis and improvements following the exact format specified above.`;
-
-  const chat = model.startChat({
-    history: messages.map(msg => ({
-      role: msg.role === 'user' ? 'user' : 'model',
-      parts: [{ text: msg.content }]
-    })),
-    generationConfig: GENERATION_CONFIG,
+  const { data: { secrets } } = await supabase.functions.invoke('get-secret', {
+    body: { name: 'GEMINI_API_KEY' }
   });
 
-  const result = await chat.sendMessage(prompt);
-  const response = await result.response;
-  return response.text();
+  const text = await generateAIResponse(message, preferences, messages, secrets);
+
+  // Deduct token after successful API call
+  await supabase
+    .from('user_credits')
+    .update({ tokens: credits.tokens - 1 })
+    .eq('id', user.id);
+
+  updateRizzScore(text, onScoreUpdate);
+  return text;
+};
+
+const updateRizzScore = (text: string, onScoreUpdate: (score: number) => void) => {
+  const scoreMatch = text.match(/RIZZ SCORE:\s*(\d{1,3})/);
+  if (scoreMatch && scoreMatch[1]) {
+    const score = parseInt(scoreMatch[1], 10);
+    if (score >= 0 && score <= 100) {
+      onScoreUpdate(score);
+    }
+  }
 };

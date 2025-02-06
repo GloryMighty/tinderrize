@@ -8,7 +8,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { User, MessageSquare, Heart } from "lucide-react";
+import { User, MessageSquare, Heart, Zap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export function MobileSidebar() {
@@ -28,7 +28,12 @@ export function MobileSidebar() {
     {
       title: "Your Match",
       icon: Heart,
-      onClick: () => navigate("/match")
+      onClick: () => navigate("/profile")
+    },
+    {
+      title: "Upgrade",
+      icon: Zap,
+      onClick: () => navigate("/upgrade")
     }
   ];
 

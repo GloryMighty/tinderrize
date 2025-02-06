@@ -1,4 +1,3 @@
-
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -8,6 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RizzStyleModal } from "./modals/RizzStyleModal";
 import { MatchDescriptionModal } from "./modals/MatchDescriptionModal";
 import { RizzScore } from "./RizzScore";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,6 +27,7 @@ export const Header = ({ rizzScore }: HeaderProps) => {
   const [rizzStyle, setRizzStyle] = useState("casual");
   const [isRizzStyleModalOpen, setIsRizzStyleModalOpen] = useState(false);
   const [isMatchModalOpen, setIsMatchModalOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -50,7 +52,7 @@ export const Header = ({ rizzScore }: HeaderProps) => {
     <header className="w-full py-4 px-6 bg-gradient-to-b from-[#1A1F2C] to-[#2C2F3E] border-b border-primary/10 relative z-50">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-8">
+          <div className="flex items-center gap-4 md:gap-8">
             <h1 
               className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent cursor-pointer"
               onClick={() => navigate("/")}
@@ -58,12 +60,21 @@ export const Header = ({ rizzScore }: HeaderProps) => {
               Tinderizzer
             </h1>
             
-            <div className="w-[200px]">
-              <RizzScore score={rizzScore} />
-            </div>
+            {isMobile ? (
+              <div className="flex items-center gap-4">
+                <div className="w-[150px]">
+                  <RizzScore score={rizzScore} />
+                </div>
+                <SidebarTrigger />
+              </div>
+            ) : (
+              <div className="w-[200px]">
+                <RizzScore score={rizzScore} />
+              </div>
+            )}
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-4">
             <Select value={rizzStyle} onValueChange={(value) => {
               setRizzStyle(value);
               setIsRizzStyleModalOpen(true);

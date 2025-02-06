@@ -35,7 +35,7 @@ const Upgrade = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Header rizzScore={30} />
       <main className="container py-12">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4">Upgrade Your Rizz Game</h1>

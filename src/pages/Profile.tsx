@@ -94,7 +94,7 @@ const Profile = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
-        <Header />
+        <Header rizzScore={30} />
         <main className="container py-12">
           <div className="flex justify-center items-center">
             Loading...
@@ -106,7 +106,7 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Header rizzScore={30} />
       <main className="container py-12">
         <Card className="max-w-2xl mx-auto p-6">
           <h1 className="text-2xl font-bold mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">

@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import { ChatInput } from "./ChatInput";
 import { ChatHistory } from "./ChatHistory";
 import { ChatHeader } from "./ChatHeader";
@@ -11,9 +10,15 @@ import { ChatMessage } from "@/types/chat";
 
 interface ChatAssistantProps {
   onScoreUpdate: (score: number) => void;
+  onFirstMessage?: () => void;
+  onTypingStateChange?: (typing: boolean) => void;
 }
 
-export const ChatAssistant = ({ onScoreUpdate }: ChatAssistantProps) => {
+export const ChatAssistant = ({ 
+  onScoreUpdate, 
+  onFirstMessage,
+  onTypingStateChange 
+}: ChatAssistantProps) => {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -23,6 +28,9 @@ export const ChatAssistant = ({ onScoreUpdate }: ChatAssistantProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim()) return;
+
+    onFirstMessage?.();
+    onTypingStateChange?.(true);
 
     const userMessage: ChatMessage = {
       role: 'user',
@@ -63,6 +71,7 @@ export const ChatAssistant = ({ onScoreUpdate }: ChatAssistantProps) => {
       });
     } finally {
       setIsLoading(false);
+      onTypingStateChange?.(false);
     }
   };
 

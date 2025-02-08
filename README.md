@@ -32,7 +32,7 @@ This project is built using a modern and robust tech stack, focusing on performa
     *   **Google Generative AI (Gemini API):**  Utilized for AI-powered message analysis and improvement suggestions.  The core logic is implemented in `src/components/ChatAssistant.tsx` and configured in `src/utils/aiConfig.ts`.
 
 *   **Package Manager:**
-    *   **UV:**  A fast and modern Python package installer and resolver (inferred from project setup).
+    *   **npm:**  Node package manager is used to manage project dependencies.
 
 *   **Styling & Design:**
     *   **Custom CSS:**  For project-specific styles and enhancements, as seen in `src/index.css` and `src/App.css`.
@@ -61,9 +61,9 @@ To run this project locally, follow these steps:
     cd [project-directory]
     ```
 
-2.  **Install dependencies using UV:**
+2.  **Install dependencies using npm:**
     ```bash
-    uv install
+    npm install
     ```
 
 3.  **Set up Supabase:**
@@ -78,7 +78,7 @@ To run this project locally, follow these steps:
 
 5.  **Start the development server:**
     ```bash
-    uv run dev
+    npm run dev
     ```
 
 6.  **Open your browser and navigate to `http://localhost:8080`.**

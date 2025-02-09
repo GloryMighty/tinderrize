@@ -8,6 +8,7 @@ import { ChatHeader } from "./ChatHeader";
 import { generateAIResponse } from "@/utils/aiChat";
 import { usePreferences } from "@/hooks/usePreferences";
 import { ChatMessage } from "@/types/chat";
+import { FeedbackButton } from "../FeedbackButton";
 
 interface ChatAssistantProps {
   onScoreUpdate: (score: number) => void;
@@ -147,7 +148,7 @@ export const ChatAssistant = ({
   };
 
   return (
-    <Card className={`h-full p-6 bg-gradient-to-b from-white/5 to-primary/5 backdrop-blur-sm 
+      <Card className={`h-full p-6 bg-gradient-to-b from-white/5 to-primary/5 backdrop-blur-sm 
                      border-primary/10 shadow-xl overflow-hidden flex flex-col
                      transition-all duration-500 ease-in-out`}>
       <ChatHeader />
@@ -158,6 +159,7 @@ export const ChatAssistant = ({
         onSubmit={handleSubmit}
         isLoading={isLoading}
       />
+      <FeedbackButton formUrl="https://forms.gle/kGgRBkF3HNSRZy728" />
     </Card>
   );
 };
